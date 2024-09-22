@@ -34,10 +34,10 @@ This project is the culmination of learning from **"The Complete Spring Boot Gui
 ## Getting Started
 
 1. **Clone the repository**
-    git clone https://github.com/iprytula/sb-ecom
+    ```bash git clone https://github.com/iprytula/sb-ecom
 2. **Navigate to the project directory**
-    cd your-repo-name
+    ```bash cd your-repo-name
 3. **Build the project**
-    mvn clean install
+    ```bash mvn clean install
 4. **Run the application**
-    mvn spring-boot:run
+    ```bash mvn spring-boot:run
