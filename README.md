@@ -4,7 +4,7 @@ An advanced eCommerce application built using Spring Boot, demonstrating best pr
 
 ## Overview
 
-This project is the culmination of learning from *[Java Spring Boot: Professional eCommerce Project](https://www.udemy.com/course/spring-boot-using-intellij-build-a-real-world-project/) course. It covers fundamental to advanced concepts of Spring Framework and Spring Boot, implementing a full-featured eCommerce platform.
+This project is the culmination of learning from [Java Spring Boot: Professional eCommerce Project](https://www.udemy.com/course/spring-boot-using-intellij-build-a-real-world-project/) course. It covers fundamental to advanced concepts of Spring Framework and Spring Boot, implementing a full-featured eCommerce platform.
 
 ## Features
 
