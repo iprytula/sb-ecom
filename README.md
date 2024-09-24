@@ -38,6 +38,6 @@ This project is the culmination of learning from [Java Spring Boot: Professional
 2. **Navigate to the project directory**
     ```cd sb-ecom```
 3. **Build the project** 
-    ```mvn clean install```
+    ```./mvnw spring-boot:run```
 4. **Run the application** 
-    ```mvn spring-boot:run```
+    ```./mvnw spring-boot:run```
