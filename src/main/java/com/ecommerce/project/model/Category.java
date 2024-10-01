@@ -4,8 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.*;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,26 +17,6 @@ public class Category {
 
 	// Constructor without categoryId (since it's auto-generated)
 	public Category(String categoryName) {
-		this.categoryName = categoryName;
-	}
-
-	// No-args constructor (required by JPA)
-	public Category() {
-	}
-
-	public Long getCategoryId() {
-		return categoryId;
-	}
-
-	public void setCategoryId(Long categoryId) {
-		this.categoryId = categoryId;
-	}
-
-	public String getCategoryName() {
-		return categoryName;
-	}
-
-	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
 }
