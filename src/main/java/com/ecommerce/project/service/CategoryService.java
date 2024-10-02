@@ -1,24 +1,15 @@
 package com.ecommerce.project.service;
 
-import model.Category;
-import org.springframework.stereotype.Service;
+import com.ecommerce.project.model.Category;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class CategoryService implements CategoryServiceInterface {
+public interface CategoryService {
+	List<Category> getAllCategories();
 
-	private final List<Category> categories = new ArrayList<>();
+	Category createCategory(Category category);
 
-	@Override
-	public List<Category> getAllCategories() {
-		return categories;
-	}
+	Category updateCategory(Category newCategoryData, long id);
 
-	@Override
-	public Category createCategory(Category category) {
-		categories.add(category);
-		return category;
-	}
+	String deleteCategory(long categoryId);
 }
