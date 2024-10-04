@@ -1,5 +1,6 @@
 package com.ecommerce.project.controller;
 
+import com.ecommerce.project.config.AppConstants;
 import com.ecommerce.project.payload.CategoriesResponse;
 import com.ecommerce.project.payload.CategoryDTO;
 import com.ecommerce.project.service.CategoryServiceImpl;
@@ -20,14 +21,24 @@ public class CategoryController {
 	}
 
 	@GetMapping("/categories")
-	public ResponseEntity<CategoriesResponse> getCategories() {
-		CategoriesResponse categories = categoryServiceImpl.getAllCategories();
-		return new ResponseEntity<>(categories, HttpStatus.OK);
+	public ResponseEntity<CategoriesResponse> getCategories(
+		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+		@RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORIES_BY) String sortBy,
+		@RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_CATEGORIES_ORDER) String sortOrder
+	) {
+		return new ResponseEntity<>(
+			categoryServiceImpl.getAllCategories(pageNumber, pageSize, sortBy, sortOrder),
+			HttpStatus.OK
+		);
 	}
 
 	@PostMapping("/categories")
 	public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO category) {
-		return new ResponseEntity<>(categoryServiceImpl.createCategory(category), HttpStatus.CREATED);
+		return new ResponseEntity<>(
+			categoryServiceImpl.createCategory(category),
+			HttpStatus.CREATED
+		);
 	}
 
 	@PutMapping("/categories/{id}")

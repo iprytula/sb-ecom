@@ -4,11 +4,11 @@ import com.ecommerce.project.payload.CategoriesResponse;
 import com.ecommerce.project.payload.CategoryDTO;
 
 public interface CategoryService {
-	CategoriesResponse getAllCategories();
+	CategoriesResponse getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
 	CategoryDTO createCategory(CategoryDTO category);
 
 	CategoryDTO updateCategory(CategoryDTO newCategoryData, long id);
 
-	CategoryDTO deleteCategory(long categoryId);
+	CategoryDTO deleteCategory(Long categoryId);
 }
