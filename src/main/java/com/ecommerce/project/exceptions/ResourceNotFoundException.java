@@ -1,5 +1,8 @@
 package com.ecommerce.project.exceptions;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class ResourceNotFoundException extends RuntimeException {
 	String resourceName;
 	String field;
@@ -20,6 +23,7 @@ public class ResourceNotFoundException extends RuntimeException {
 		this.fieldId = fieldId;
 	}
 
-	public ResourceNotFoundException() {
+	public ResourceNotFoundException(String message) {
+		super(message);
 	}
 }

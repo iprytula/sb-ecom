@@ -1,11 +1,6 @@
 package com.ecommerce.project.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -15,9 +10,9 @@ import lombok.*;
 public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long categoryId;
+	@Column(nullable = false)
+	private Long id;
 
-	@NotBlank
-	@Size(min = 5, max = 25)
-	private String categoryName;
+	@Column(nullable = false, length = 25)
+	private String name;
 }

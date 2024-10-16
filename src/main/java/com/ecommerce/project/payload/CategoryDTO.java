@@ -1,0 +1,18 @@
+package com.ecommerce.project.payload;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoryDTO {
+	private Long id;
+
+	@NotBlank(message = "Category name is mandatory")
+	@Size(min = 2, max = 25, message = "Category name must be between 2 and 100 characters")
+	private String name;
+}
