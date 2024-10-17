@@ -67,14 +67,37 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductsResponse getProductsByCategoryId(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-		Sort sortByAndOrder =
-			sortOrder.equalsIgnoreCase("asc")
-				? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-
-		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, getSortByAndOrder(sortBy, sortOrder));
 		Page<Product> productsPage = productRepository.findByCategoryId(pageDetails, categoryId);
 		return getProductsResponse(pageNumber, pageSize, productsPage);
+	}
+
+	@Override
+	public ProductsResponse getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, getSortByAndOrder(sortBy, sortOrder));
+		Page<Product> productsPage = productRepository.findByNameLikeIgnoreCase("%" + keyword + "%", pageDetails);
+		return getProductsResponse(pageNumber, pageSize, productsPage);
+	}
+
+	@Override
+	public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
+		Product existingProduct = productRepository.findById(productId)
+			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+
+		modelMapper.typeMap(ProductDTO.class, Product.class).addMappings(mapper -> mapper.skip(Product::setId));
+		modelMapper.map(productDTO, existingProduct);
+
+		Product updatedProduct = productRepository.save(existingProduct);
+
+		return modelMapper.map(updatedProduct, ProductDTO.class);
+	}
+
+	@Override
+	public ProductDTO deleteProduct(Long productId) {
+		Product productToDelete = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+		productRepository.delete(productToDelete);
+
+		return modelMapper.map(productToDelete, ProductDTO.class);
 	}
 
 	private ProductsResponse getProductsResponse(Integer pageNumber, Integer pageSize, Page<Product> productsPage) {
@@ -98,6 +121,12 @@ public class ProductServiceImpl implements ProductService {
 		productsResponse.setLastPage(productsPage.isLast());
 
 		return productsResponse;
+	}
+
+	private Sort getSortByAndOrder(String sortBy, String sortOrder) {
+		return sortOrder.equalsIgnoreCase("asc")
+			? Sort.by(sortBy).ascending()
+			: Sort.by(sortBy).descending();
 	}
 
 }
