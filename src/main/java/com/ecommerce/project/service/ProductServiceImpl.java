@@ -10,12 +10,15 @@ import com.ecommerce.project.repository.CategoryRepository;
 import com.ecommerce.project.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -24,16 +27,22 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
 	private final ModelMapper modelMapper;
+	private final FileServiceImpl fileServiceImpl;
+
+	@Value("${project.image_path}")
+	private String path;
 
 	@Autowired
 	public ProductServiceImpl(
 		ProductRepository productRepository,
 		CategoryRepository categoryRepository,
-		ModelMapper modelMapper
+		ModelMapper modelMapper,
+		FileServiceImpl fileServiceImpl
 	) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
 		this.modelMapper = modelMapper;
+		this.fileServiceImpl = fileServiceImpl;
 	}
 
 	@Override
@@ -66,14 +75,17 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductsResponse getProductsByCategoryId(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+	public ProductsResponse getProductsByCategoryId(
+		Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, getSortByAndOrder(sortBy, sortOrder));
 		Page<Product> productsPage = productRepository.findByCategoryId(pageDetails, categoryId);
 		return getProductsResponse(pageNumber, pageSize, productsPage);
 	}
 
 	@Override
-	public ProductsResponse getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+	public ProductsResponse getProductsByKeyword(
+		String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder
+	) {
 		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, getSortByAndOrder(sortBy, sortOrder));
 		Page<Product> productsPage = productRepository.findByNameLikeIgnoreCase("%" + keyword + "%", pageDetails);
 		return getProductsResponse(pageNumber, pageSize, productsPage);
@@ -94,11 +106,25 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductDTO deleteProduct(Long productId) {
-		Product productToDelete = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+		Product productToDelete = productRepository.findById(productId)
+			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 		productRepository.delete(productToDelete);
 
 		return modelMapper.map(productToDelete, ProductDTO.class);
 	}
+
+	@Override
+	public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+
+		String fileName = fileServiceImpl.uploadFile(path, image);
+		product.setImage(fileName);
+		Product updatedProduct = productRepository.save(product);
+
+		return modelMapper.map(updatedProduct, ProductDTO.class);
+	}
+
 
 	private ProductsResponse getProductsResponse(Integer pageNumber, Integer pageSize, Page<Product> productsPage) {
 		List<Product> products = productsPage.getContent();
