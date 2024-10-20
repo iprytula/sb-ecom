@@ -14,6 +14,7 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false)
 	private Long id;
+	@Column(nullable = false)
 	private String name;
 	private String description;
 	private Double price;
@@ -24,5 +25,6 @@ public class Product {
 
 	@ManyToOne
 //	@JoinColumn(name = "category_id")
+	@JoinColumn(nullable = false)
 	private Category category;
 }
