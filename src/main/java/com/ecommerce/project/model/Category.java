@@ -3,6 +3,8 @@ package com.ecommerce.project.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -15,4 +17,7 @@ public class Category {
 
 	@Column(nullable = false, length = 25)
 	private String name;
+
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+	private List<Product> products;
 }
