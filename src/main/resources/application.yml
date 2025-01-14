@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: sb-ecom
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:test
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    #hibernate:
+    #  ddl-auto: create-drop
+  app:
+    jwtSecret: 3f2c7e81492d8d74f24b6a6c4e91451d18d07349c5e8ef5baf330d56f4f5a16b
+    jwtExpirationMs: 26298000
+project:
+  image_path: "images/"
+logging:
+  level:
+    org:
+      springframework: DEBUG
+      hibernate:
+        SQL: DEBUG
+        security: DEBUG
+    com:
+      ecommerce:
+        project: DEBUG
