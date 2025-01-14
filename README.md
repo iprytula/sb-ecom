@@ -8,17 +8,30 @@ This project is the culmination of learning from [Java Spring Boot: Professional
 
 ## Features
 
-- **RESTful APIs** with Spring Boot
-- **Database Integration** using JPA with PostgreSQL/MySQL
-- **Security** implemented with Spring Security and JWT
-- **User Management** for profiles, roles, and permissions
-- **Shopping Cart** functionality
-- **Order and Payment Processing**
-- **Deployment** on AWS
-- **Frontend** developed with Thymeleaf
+### Backend
+- RESTful APIs with Spring Boot.
+- Secure authentication and authorization using Spring Security and JWT.
+- Integration with PostgreSQL and MySQL databases using JPA and Hibernate.
+- User profile, role, and permission management.
+- Shopping cart, order, and payment processing.
+- Pagination and sorting for efficient data management.
+- Deployment-ready for AWS with advanced deployment options.
+- Use of Lombok to reduce boilerplate code.
+
+### Frontend
+- Fully responsive UI developed with React.
+- Integration of React Router for seamless navigation.
+- State management using Redux.
+- Advanced React concepts, including custom hooks and forms.
+- Styling with Tailwind CSS.
+
+### Additional Features
+- Introduction to Spring AI and Generative AI integration.
+- Full-stack implementation with React and Spring Boot.
 
 ## Technologies Used
 
+### Backend
 - Java
 - Spring Framework
 - Spring Boot
@@ -28,16 +41,45 @@ This project is the culmination of learning from [Java Spring Boot: Professional
 - JPA/Hibernate
 - PostgreSQL/MySQL
 - Lombok
-- Thymeleaf
 - AWS
+
+### Frontend
+- React
+- React Router
+- Redux
+- Tailwind CSS
+- React Hook Forms
 
 ## Getting Started
 
-1. **Clone the repository** 
-    ```git clone https://github.com/iprytula/sb-ecom```
-2. **Navigate to the project directory**
-    ```cd sb-ecom```
-3. **Build the project** 
-    ```./mvnw spring-boot:run```
-4. **Run the application** 
-    ```./mvnw spring-boot:run```
+### Prerequisites
+- Basic understanding of Java.
+- A computer with an internet connection.
+- Tools: IntelliJ IDEA, Java JDK, Node.js (for React).
+
+### Steps to Run the Application
+
+1. **Clone the Repository**
+    ```bash
+    git clone https://github.com/iprytula/sb-ecom
+    ```
+
+2. **Navigate to the Project Directory**
+    ```bash
+    cd sb-ecom
+    ```
+
+3. **Build and Run the Backend**
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+
+4. **Set Up the Frontend**
+    ```bash
+    cd frontend
+    npm install
+    npm start
+    ```
+
+5. **Access the Application**
+   Open your browser and navigate to `http://localhost:3000` for the frontend or `http://localhost:8080` for the backend APIs.
