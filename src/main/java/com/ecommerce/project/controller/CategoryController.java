@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/public")
+@RequestMapping("/api")
 public class CategoryController {
 	private final CategoryServiceImpl categoryServiceImpl;
 
@@ -20,7 +20,7 @@ public class CategoryController {
 		this.categoryServiceImpl = categoryServiceImpl;
 	}
 
-	@GetMapping("/categories")
+	@GetMapping("/public/categories")
 	public ResponseEntity<CategoriesResponse> getCategories(
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
@@ -33,7 +33,7 @@ public class CategoryController {
 		);
 	}
 
-	@PostMapping("/categories")
+	@PostMapping("/admin/categories")
 	public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO category) {
 		return new ResponseEntity<>(
 			categoryServiceImpl.createCategory(category),
@@ -41,7 +41,7 @@ public class CategoryController {
 		);
 	}
 
-	@PutMapping("/categories/{id}")
+	@PutMapping("/admin/categories/{id}")
 	public ResponseEntity<CategoryDTO> updateCategory(
 		@RequestBody CategoryDTO category, @PathVariable int id
 	) {
@@ -51,7 +51,7 @@ public class CategoryController {
 		);
 	}
 
-	@DeleteMapping("/categories/{categoryId}")
+	@DeleteMapping("/admin/categories/{categoryId}")
 	public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable long categoryId) {
 		return new ResponseEntity<>(
 			categoryServiceImpl.deleteCategory(categoryId),

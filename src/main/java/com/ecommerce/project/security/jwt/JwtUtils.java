@@ -1,14 +1,18 @@
 package com.ecommerce.project.security.jwt;
 
+import com.ecommerce.project.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
@@ -23,6 +27,9 @@ public class JwtUtils {
 
 	@Value("${spring.app.jwtExpirationMs}")
 	private int jwtExpirationMs;
+
+	@Value("${spring.app.jwtCookieName}")
+	private String jwtCookieName;
 
 	/**
 	 * Extracts the JWT from the Authorization header of the HTTP request.
@@ -69,6 +76,26 @@ public class JwtUtils {
 			.getPayload().getSubject();
 	}
 
+	public String getJwtCookie(HttpServletRequest request) {
+		Cookie cookie = WebUtils.getCookie(request, jwtCookieName);
+
+		if (cookie != null) {
+			return cookie.getValue();
+		} else {
+			return null;
+		}
+	}
+
+	public ResponseCookie generateJwtCookie(UserDetailsImpl userDetails) {
+		String jwt = generateJwtToken(userDetails);
+		return ResponseCookie.from(jwtCookieName, jwt)
+			.path("/api")
+			.httpOnly(true)
+			.maxAge(24 * 60 * 60)
+			.sameSite("Lax")
+			.build();
+	}
+
 	/**
 	 * Retrieves the secret key used for signing JWT tokens.
 	 *
@@ -102,5 +129,12 @@ public class JwtUtils {
 			logger.error("JWT claims string is empty: {}", e.getMessage());
 		}
 		return false;
+	}
+
+	public ResponseCookie getCleanJwtCookie() {
+		ResponseCookie cookie = ResponseCookie.from(jwtCookieName, null)
+			.path("/api")
+			.build();
+		return cookie;
 	}
 }
