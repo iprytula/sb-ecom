@@ -25,10 +25,6 @@ This project is the culmination of learning from [Java Spring Boot: Professional
 - Advanced React concepts, including custom hooks and forms.
 - Styling with Tailwind CSS.
 
-### Additional Features
-- Introduction to Spring AI and Generative AI integration.
-- Full-stack implementation with React and Spring Boot.
-
 ## Technologies Used
 
 ### Backend
