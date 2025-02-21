@@ -24,9 +24,8 @@ public class Product {
 	private String name;
 	private String description;
 	private Double standardPrice;
-	private Integer quantity;
 	private Double specialPrice;
-	private Double discountPrice;
+	private Integer quantity;
 	private String image;
 
 	@ManyToOne
@@ -46,9 +45,7 @@ public class Product {
 	private List<CartItem> products = new ArrayList<>();
 
 	public Double getPrice() {
-		if (this.discountPrice != null) {
-			return this.discountPrice;
-		} else if (this.specialPrice != null) {
+		if (this.specialPrice != null) {
 			return this.specialPrice;
 		} else {
 			return this.standardPrice;

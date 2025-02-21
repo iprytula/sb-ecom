@@ -7,6 +7,7 @@ import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.CartDTO;
+import com.ecommerce.project.payload.CartsResponse;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.repository.CartItemRepository;
 import com.ecommerce.project.repository.CartRepository;
@@ -14,11 +15,14 @@ import com.ecommerce.project.repository.ProductRepository;
 import com.ecommerce.project.util.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -49,7 +53,7 @@ public class CartServiceImpl implements CartService {
 			throw new APIException("productId and quantity must be present and greater than 0.");
 		}
 
-		Cart cart = this.createCart();
+		Cart cart = this.getCart();
 
 		Product product = productRepository.findById(productId)
 			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
@@ -67,20 +71,20 @@ public class CartServiceImpl implements CartService {
 		newCartItem.setProduct(product);
 		newCartItem.setCart(cart);
 		newCartItem.setQuantity(quantity);
-		newCartItem.setDiscount(product.getDiscountPrice());
-		newCartItem.setProductPrice(product.getPrice());
+		newCartItem.setPrice(product.getPrice());
 
 		cart.addCartItem(newCartItem);
 
-		cart.setTotalPrice(cart.getTotalPrice() + (product.getPrice() * quantity));
-
-		CartDTO cartDTO = modelMapper.map(cartRepository.save(cart), CartDTO.class);
+		CartDTO cartDTO = modelMapper.map(
+			cartRepository.save(cart),
+			CartDTO.class
+		);
 
 		List<ProductDTO> products = cart.getCartItems().stream()
 			.map(item -> {
-				ProductDTO map = modelMapper.map(item.getProduct(), ProductDTO.class);
-				map.setQuantity(item.getQuantity());
-				return map;
+				ProductDTO productDTO = modelMapper.map(item.getProduct(), ProductDTO.class);
+				productDTO.setQuantity(item.getQuantity());
+				return productDTO;
 			}).toList();
 
 		cartDTO.setProducts(products);
@@ -88,10 +92,10 @@ public class CartServiceImpl implements CartService {
 		return cartDTO;
 	}
 
-	private Cart createCart() {
+	private Cart getCart() {
 		User loggedInUser = authUtil.loggedInUser();
 		Optional<Cart> userCart = cartRepository.findCartByUserId(loggedInUser.getId());
-		if(userCart.isPresent()) {
+		if (userCart.isPresent()) {
 			return userCart.get();
 		}
 
@@ -100,5 +104,43 @@ public class CartServiceImpl implements CartService {
 		cart.setUser(loggedInUser);
 
 		return cartRepository.save(cart);
+	}
+
+	@Override
+public CartsResponse getAllCarts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+		Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+			? Sort.by(sortBy).ascending()
+			: Sort.by(sortBy).descending();
+
+		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+		Page<Cart> cartsPage = cartRepository.findAll(pageDetails);
+
+		return getCartsResponse(pageNumber, pageSize, cartsPage);
+}
+
+	private CartsResponse getCartsResponse(Integer pageNumber, Integer pageSize, Page<Cart> cartsPage) {
+		if (cartsPage.isEmpty())
+			throw new ResourceNotFoundException("No carts found");
+
+		List<CartDTO> cartDTOs = cartsPage.getContent().stream()
+			.map(cart -> {
+				CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+				List<ProductDTO> products = cart.getCartItems().stream()
+					.map(cartItem -> modelMapper.map(cartItem.getProduct(), ProductDTO.class))
+					.toList();
+				cartDTO.setProducts(products);
+				return cartDTO;
+			})
+			.toList();
+
+		CartsResponse cartsResponse = new CartsResponse();
+		cartsResponse.setContent(cartDTOs);
+		cartsResponse.setTotalElements(cartsPage.getTotalElements());
+		cartsResponse.setTotalPages(cartsPage.getTotalPages());
+		cartsResponse.setPageNumber(pageNumber);
+		cartsResponse.setPageSize(pageSize);
+		cartsResponse.setLastPage(cartsPage.isLast());
+
+		return cartsResponse;
 	}
 }

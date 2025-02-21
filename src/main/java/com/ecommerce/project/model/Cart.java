@@ -29,6 +29,6 @@ public class Cart {
 
 	public void addCartItem(CartItem cartItem) {
 		cartItems.add(cartItem);
-		totalPrice += cartItem.getProductPrice() * cartItem.getQuantity();
+		totalPrice += cartItem.getPrice() * cartItem.getQuantity();
 	}
 }

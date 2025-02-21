@@ -19,10 +19,9 @@ public class ProductDTO {
 	private String name;
 	@Size(min = 20, message = "Product description should contain at least 20 characters")
 	private String description;
-	private Double price;
-	private Integer quantity;
+	private Double standardPrice;
 	private Double specialPrice;
-	private Double discountPrice;
+	private Integer quantity;
 	private String image;
 	@NotNull(message = "categoryId is required", groups = Default.class)
 	private Long categoryId;
