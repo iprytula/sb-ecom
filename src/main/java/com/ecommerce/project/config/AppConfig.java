@@ -1,5 +1,7 @@
 package com.ecommerce.project.config;
 
+import com.ecommerce.project.repository.UserRepository;
+import com.ecommerce.project.util.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
