@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
-	@Query("SELECT c FROM Cart c WHERE c.user.id = ?1 AND c.active = true")
+	@Query("SELECT c FROM Cart c WHERE c.user.id = ?1 AND c.isActive = true")
 	Optional<Cart> findActiveCartByUserId(Long id);
 }

@@ -100,21 +100,9 @@ public class CartServiceImpl implements CartService {
 		}
 
 		Cart cart = new Cart();
-		cart.setTotalPrice(0.00);
 		cart.setUser(loggedInUser);
 
 		return cartRepository.save(cart);
-	}
-
-	private Cart getLoggedInUserActiveCart() {
-		Long loggedInUserId = authUtil.loggedInUser().getId();
-		Optional<Cart> cart = cartRepository.findActiveCartByUserId(loggedInUserId);
-
-		if (cart.isEmpty()) {
-			throw new ResourceNotFoundException("Cart", "userId", loggedInUserId);
-		}
-
-		return cart.get();
 	}
 
 	@Override
@@ -131,10 +119,16 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public CartDTO getLoggedInUserCart() {
-		Cart cart = getLoggedInUserActiveCart();
+		Long loggedInUserId = authUtil.loggedInUser().getId();
+		Cart cart = cartRepository.findActiveCartByUserId(loggedInUserId)
+			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", loggedInUserId));
 
 		List<ProductDTO> products = cart.getCartItems().stream()
-			.map(cartItem -> modelMapper.map(cartItem.getProduct(), ProductDTO.class))
+			.map(cartItem -> {
+				ProductDTO productDTO = modelMapper.map(cartItem.getProduct(), ProductDTO.class);
+				productDTO.setQuantity(cartItem.getQuantity());
+				return productDTO;
+			})
 			.toList();
 
 		CartDTO cartResponse = modelMapper.map(cart, CartDTO.class);
@@ -151,7 +145,12 @@ public class CartServiceImpl implements CartService {
 			.map(cart -> {
 				CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
 				List<ProductDTO> products = cart.getCartItems().stream()
-					.map(cartItem -> modelMapper.map(cartItem.getProduct(), ProductDTO.class))
+					.map(cartItem -> {
+						ProductDTO productDTO = modelMapper.map(cartItem.getProduct(), ProductDTO.class);
+						productDTO.setQuantity(cartItem.getQuantity());
+
+						return productDTO;
+					})
 					.toList();
 				cartDTO.setProducts(products);
 				return cartDTO;
