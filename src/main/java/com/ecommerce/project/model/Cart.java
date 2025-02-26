@@ -27,6 +27,8 @@ public class Cart {
 
 	private Double totalPrice = 0.0;
 
+	private Boolean active = true;
+
 	public void addCartItem(CartItem cartItem) {
 		cartItems.add(cartItem);
 		totalPrice += cartItem.getPrice() * cartItem.getQuantity();

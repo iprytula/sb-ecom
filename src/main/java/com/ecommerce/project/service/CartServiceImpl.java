@@ -53,7 +53,7 @@ public class CartServiceImpl implements CartService {
 			throw new APIException("productId and quantity must be present and greater than 0.");
 		}
 
-		Cart cart = this.getCart();
+		Cart cart = this.getActiveCartOrCreateOne();
 
 		Product product = productRepository.findById(productId)
 			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
@@ -92,9 +92,9 @@ public class CartServiceImpl implements CartService {
 		return cartDTO;
 	}
 
-	private Cart getCart() {
+	private Cart getActiveCartOrCreateOne() {
 		User loggedInUser = authUtil.loggedInUser();
-		Optional<Cart> userCart = cartRepository.findCartByUserId(loggedInUser.getId());
+		Optional<Cart> userCart = cartRepository.findActiveCartByUserId(loggedInUser.getId());
 		if (userCart.isPresent()) {
 			return userCart.get();
 		}
@@ -106,8 +106,19 @@ public class CartServiceImpl implements CartService {
 		return cartRepository.save(cart);
 	}
 
+	private Cart getLoggedInUserActiveCart() {
+		Long loggedInUserId = authUtil.loggedInUser().getId();
+		Optional<Cart> cart = cartRepository.findActiveCartByUserId(loggedInUserId);
+
+		if (cart.isEmpty()) {
+			throw new ResourceNotFoundException("Cart", "userId", loggedInUserId);
+		}
+
+		return cart.get();
+	}
+
 	@Override
-public CartsResponse getAllCarts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+	public CartsResponse getAllCarts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 		Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
 			? Sort.by(sortBy).ascending()
 			: Sort.by(sortBy).descending();
@@ -117,6 +128,20 @@ public CartsResponse getAllCarts(Integer pageNumber, Integer pageSize, String so
 
 		return getCartsResponse(pageNumber, pageSize, cartsPage);
 }
+
+	@Override
+	public CartDTO getLoggedInUserCart() {
+		Cart cart = getLoggedInUserActiveCart();
+
+		List<ProductDTO> products = cart.getCartItems().stream()
+			.map(cartItem -> modelMapper.map(cartItem.getProduct(), ProductDTO.class))
+			.toList();
+
+		CartDTO cartResponse = modelMapper.map(cart, CartDTO.class);
+		cartResponse.setProducts(products);
+
+		return cartResponse;
+	}
 
 	private CartsResponse getCartsResponse(Integer pageNumber, Integer pageSize, Page<Cart> cartsPage) {
 		if (cartsPage.isEmpty())

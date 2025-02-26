@@ -14,5 +14,5 @@ public class CartDTO {
 	private Long id;
 	private Double totalPrice;
 	private List<ProductDTO> products = new ArrayList<>();
-
+	private Boolean active = true;
 }

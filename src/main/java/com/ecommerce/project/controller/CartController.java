@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api")
 public class CartController {
@@ -22,7 +20,7 @@ public class CartController {
 	}
 
 	@PostMapping("/carts/products/{productId}/quantity/{quantity}")
-	private ResponseEntity<CartDTO> addProductToCart(@PathVariable Long productId, @PathVariable Integer quantity) {
+	public ResponseEntity<CartDTO> addProductToCart(@PathVariable Long productId, @PathVariable Integer quantity) {
 		return new ResponseEntity<>(
 			cartService.addProductToCart(productId, quantity),
 			HttpStatus.CREATED
@@ -30,7 +28,7 @@ public class CartController {
 	}
 
 	@GetMapping("/admin/carts")
-	private ResponseEntity<CartsResponse> getAllCarts(
+	public ResponseEntity<CartsResponse> getAllCarts(
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
 		@RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CARTS_BY) String sortBy,
@@ -38,6 +36,14 @@ public class CartController {
 	) {
 		return new ResponseEntity<>(
 			cartService.getAllCarts(pageNumber, pageSize, sortBy, sortOrder),
+			HttpStatus.OK
+		);
+	}
+
+	@GetMapping("/carts/cart/user/me")
+	public ResponseEntity<CartDTO> getLoggedInUserCart() {
+		return new ResponseEntity<>(
+			cartService.getLoggedInUserCart(),
 			HttpStatus.OK
 		);
 	}
