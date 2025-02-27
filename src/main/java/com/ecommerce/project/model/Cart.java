@@ -1,5 +1,6 @@
 package com.ecommerce.project.model;
 
+import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,5 +33,18 @@ public class Cart {
 	public void addCartItem(CartItem cartItem) {
 		cartItems.add(cartItem);
 		totalPrice += cartItem.getPrice() * cartItem.getQuantity();
+	}
+
+	public void setCartItem(CartItem cartItem) {
+		CartItem cartItemToUpdate = cartItems.stream().filter(ci -> ci.getId().equals(cartItem.getId())).findFirst()
+			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getId()));
+		int cartItemIndex = cartItems.indexOf(cartItemToUpdate);
+
+		cartItemToUpdate.setQuantity(cartItem.getQuantity());
+		cartItemToUpdate.setPrice(cartItem.getPrice());
+
+		cartItems.set(cartItemIndex, cartItemToUpdate);
+
+		totalPrice = cartItems.stream().mapToDouble(ci -> ci.getPrice() * ci.getQuantity()).sum();
 	}
 }

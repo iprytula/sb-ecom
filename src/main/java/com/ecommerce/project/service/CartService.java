@@ -9,4 +9,8 @@ public interface CartService {
 	CartsResponse getAllCarts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
 	CartDTO getLoggedInUserCart();
+
+	CartDTO updateProductQuantity(Long productId, Integer quantity);
+
+	CartDTO deleteProductFromCart(Long productId);
 }

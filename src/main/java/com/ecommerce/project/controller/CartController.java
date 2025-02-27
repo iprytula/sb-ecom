@@ -47,4 +47,20 @@ public class CartController {
 			HttpStatus.OK
 		);
 	}
+
+	@PostMapping ("/carts/products/{productId}/update/quantity/{quantity}")
+	public ResponseEntity<CartDTO> updateProductQuantity(@PathVariable Long productId, @PathVariable Integer quantity) {
+		return new ResponseEntity<>(
+			cartService.updateProductQuantity(productId, quantity),
+			HttpStatus.OK
+		);
+	}
+
+	@DeleteMapping("/carts/products/{productId}/delete")
+	public ResponseEntity<CartDTO> deleteProductFromCart(@PathVariable Long productId) {
+		return new ResponseEntity<>(
+			cartService.deleteProductFromCart(productId),
+			HttpStatus.OK
+		);
+	}
 }
