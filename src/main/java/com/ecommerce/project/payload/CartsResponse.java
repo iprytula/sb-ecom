@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartsResponse {
-	private List<CartDTO> content;
+	private List<CartAdminDTO> content;
 	private Integer pageNumber;
 	private Integer pageSize;
 	private Long totalElements;

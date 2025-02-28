@@ -10,7 +10,7 @@ public interface CartService {
 
 	CartDTO getLoggedInUserCart();
 
-	CartDTO updateProductQuantity(Long productId, Integer quantity);
+	CartDTO updateCartItemQuantity(Long productId, Integer quantity);
 
 	CartDTO deleteProductFromCart(Long productId);
 }

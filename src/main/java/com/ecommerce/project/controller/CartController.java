@@ -7,6 +7,7 @@ import com.ecommerce.project.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +29,7 @@ public class CartController {
 	}
 
 	@GetMapping("/admin/carts")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<CartsResponse> getAllCarts(
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
@@ -51,7 +53,7 @@ public class CartController {
 	@PutMapping ("/carts/products/{productId}/update/quantity/{quantity}")
 	public ResponseEntity<CartDTO> updateProductQuantity(@PathVariable Long productId, @PathVariable Integer quantity) {
 		return new ResponseEntity<>(
-			cartService.updateProductQuantity(productId, quantity),
+			cartService.updateCartItemQuantity(productId, quantity),
 			HttpStatus.OK
 		);
 	}

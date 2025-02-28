@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -29,6 +30,8 @@ public class Cart {
 	private Double totalPrice = 0.0;
 
 	private Boolean isActive = true;
+
+	private Date orderDate = null;
 
 	public void addCartItem(CartItem cartItem) {
 		cartItems.add(cartItem);

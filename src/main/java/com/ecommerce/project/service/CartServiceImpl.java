@@ -6,10 +6,7 @@ import com.ecommerce.project.model.Cart;
 import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.model.User;
-import com.ecommerce.project.payload.CartDTO;
-import com.ecommerce.project.payload.CartsResponse;
-import com.ecommerce.project.payload.ProductDTO;
-import com.ecommerce.project.payload.UserDTO;
+import com.ecommerce.project.payload.*;
 import com.ecommerce.project.repository.CartItemRepository;
 import com.ecommerce.project.repository.CartRepository;
 import com.ecommerce.project.repository.ProductRepository;
@@ -82,9 +79,7 @@ public class CartServiceImpl implements CartService {
 
 		cart.addCartItem(newCartItem);
 
-		CartDTO cartDTO = mapCartToCartDTO(cartRepository.save(cart));
-
-		cartDTO.setUser(mapUserToUserDTO(loggedInUser));
+		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(cartRepository.save(cart), false);
 
 		List<ProductDTO> products = cart.getCartItems().stream()
 			.map(item -> {
@@ -116,8 +111,7 @@ public class CartServiceImpl implements CartService {
 		Cart cart = cartRepository.findActiveCartByUserId(loggedInUserId)
 			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", loggedInUserId));
 
-		CartDTO cartDTO = mapCartToCartDTO(cart);
-		cartDTO.setUser(mapUserToUserDTO(authUtil.loggedInUser()));
+		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(cart, false);
 		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 
 		return cartDTO;
@@ -125,7 +119,7 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	@Transactional
-	public CartDTO updateProductQuantity(Long productId, Integer quantity) {
+	public CartDTO updateCartItemQuantity(Long productId, Integer quantity) {
 		Cart cart = cartRepository.findActiveCartByUserId(authUtil.loggedInUser().getId())
 			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", authUtil.loggedInUser().getId()));
 		Product product = productRepository.findById(productId)
@@ -145,7 +139,7 @@ public class CartServiceImpl implements CartService {
 
 		cart.updateCartItem(cartItemToUpdate);
 
-		CartDTO cartDTO = mapCartToCartDTO(cartRepository.save(cart));
+		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(cartRepository.save(cart), false);
 		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 
 		return cartDTO;
@@ -162,27 +156,31 @@ public class CartServiceImpl implements CartService {
 		cart.deleteCartItem(cartItemToDelete);
 		cartRepository.save(cart);
 
-		CartDTO cartDTO = mapCartToCartDTO(cart);
+		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(cart, false);
 		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 
 		return cartDTO;
 	}
 
-	private CartDTO mapCartToCartDTO(Cart cart) {
-		CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-		UserDTO userDTO = mapUserToUserDTO(cart.getUser());
-		cartDTO.setUser(userDTO);
+	private Object mapCartToCartDTO(Cart cart, boolean isAdmin) {
+		if (isAdmin) {
+			CartAdminDTO cartAdminDTO = modelMapper.map(cart, CartAdminDTO.class);
+			UserDTO userDTO = mapUserToUserDTO(cart.getUser());
+			cartAdminDTO.setUser(userDTO);
 
-		return cartDTO;
+			return cartAdminDTO;
+		}
+
+		return modelMapper.map(cart, CartDTO.class);
 	}
 
 	private CartsResponse getCartsResponse(Integer pageNumber, Integer pageSize, Page<Cart> cartsPage) {
 		if (cartsPage.isEmpty())
 			throw new ResourceNotFoundException("No carts found");
 
-		List<CartDTO> cartDTOs = cartsPage.getContent().stream()
+		List<CartAdminDTO> cartDTOs = cartsPage.getContent().stream()
 			.map(cart -> {
-				CartDTO cartDTO = mapCartToCartDTO(cart);
+				CartAdminDTO cartDTO = (CartAdminDTO) mapCartToCartDTO(cart, true);
 				cartDTO.setUser(mapUserToUserDTO(cart.getUser()));
 				cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 				return cartDTO;
