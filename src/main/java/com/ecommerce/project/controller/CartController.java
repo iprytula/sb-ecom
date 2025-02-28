@@ -48,7 +48,7 @@ public class CartController {
 		);
 	}
 
-	@PostMapping ("/carts/products/{productId}/update/quantity/{quantity}")
+	@PutMapping ("/carts/products/{productId}/update/quantity/{quantity}")
 	public ResponseEntity<CartDTO> updateProductQuantity(@PathVariable Long productId, @PathVariable Integer quantity) {
 		return new ResponseEntity<>(
 			cartService.updateProductQuantity(productId, quantity),
@@ -56,7 +56,7 @@ public class CartController {
 		);
 	}
 
-	@DeleteMapping("/carts/products/{productId}/delete")
+	@DeleteMapping("/carts/products/{productId}")
 	public ResponseEntity<CartDTO> deleteProductFromCart(@PathVariable Long productId) {
 		return new ResponseEntity<>(
 			cartService.deleteProductFromCart(productId),
