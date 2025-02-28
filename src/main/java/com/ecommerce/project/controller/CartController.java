@@ -20,7 +20,7 @@ public class CartController {
 		this.cartService = cartService;
 	}
 
-	@PostMapping("/carts/products/{productId}/quantity/{quantity}")
+	@PostMapping("/public/carts/products/{productId}/quantity/{quantity}")
 	public ResponseEntity<CartDTO> addProductToCart(@PathVariable Long productId, @PathVariable Integer quantity) {
 		return new ResponseEntity<>(
 			cartService.addProductToCart(productId, quantity),
@@ -42,7 +42,7 @@ public class CartController {
 		);
 	}
 
-	@GetMapping("/carts/cart/user/me")
+	@GetMapping("/public/carts/cart/user/me")
 	public ResponseEntity<CartDTO> getLoggedInUserCart() {
 		return new ResponseEntity<>(
 			cartService.getLoggedInUserCart(),
@@ -50,7 +50,7 @@ public class CartController {
 		);
 	}
 
-	@PutMapping ("/carts/products/{productId}/update/quantity/{quantity}")
+	@PutMapping ("/public/carts/products/{productId}/update/quantity/{quantity}")
 	public ResponseEntity<CartDTO> updateProductQuantity(@PathVariable Long productId, @PathVariable Integer quantity) {
 		return new ResponseEntity<>(
 			cartService.updateCartItemQuantity(productId, quantity),
@@ -58,7 +58,7 @@ public class CartController {
 		);
 	}
 
-	@DeleteMapping("/carts/products/{productId}")
+	@DeleteMapping("/public/carts/products/{productId}")
 	public ResponseEntity<CartDTO> deleteProductFromCart(@PathVariable Long productId) {
 		return new ResponseEntity<>(
 			cartService.deleteProductFromCart(productId),
