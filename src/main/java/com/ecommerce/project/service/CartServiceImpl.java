@@ -141,6 +141,8 @@ public class CartServiceImpl implements CartService {
 				+ " less than or equal to the quantity " + product.getQuantity() + ".");
 		}
 
+		if (quantity <= 0) throw new APIException("Quantity must be greater than 0.");
+
 		cartItemToUpdate.setQuantity(quantity);
 		cartItemToUpdate.setPrice(product.getPrice());
 
