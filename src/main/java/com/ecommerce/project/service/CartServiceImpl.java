@@ -82,12 +82,9 @@ public class CartServiceImpl implements CartService {
 
 		cart.addCartItem(newCartItem);
 
-		CartDTO cartDTO = modelMapper.map(
-			cartRepository.save(cart),
-			CartDTO.class
-		);
+		CartDTO cartDTO = mapCartToCartDTO(cartRepository.save(cart));
 
-		cartDTO.setUser(convertUserToUserDTO(loggedInUser));
+		cartDTO.setUser(mapUserToUserDTO(loggedInUser));
 
 		List<ProductDTO> products = cart.getCartItems().stream()
 			.map(item -> {
@@ -119,11 +116,11 @@ public class CartServiceImpl implements CartService {
 		Cart cart = cartRepository.findActiveCartByUserId(loggedInUserId)
 			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", loggedInUserId));
 
-		CartDTO cartResponse = modelMapper.map(cart, CartDTO.class);
-		cartResponse.setUser(convertUserToUserDTO(authUtil.loggedInUser()));
-		cartResponse.setProducts(getProductsFromCartItems(cart.getCartItems()));
+		CartDTO cartDTO = mapCartToCartDTO(cart);
+		cartDTO.setUser(mapUserToUserDTO(authUtil.loggedInUser()));
+		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 
-		return cartResponse;
+		return cartDTO;
 	}
 
 	@Override
@@ -146,10 +143,10 @@ public class CartServiceImpl implements CartService {
 		cartItemToUpdate.setQuantity(quantity);
 		cartItemToUpdate.setPrice(product.getPrice());
 
-		cart.setCartItem(cartItemToUpdate);
+		cart.updateCartItem(cartItemToUpdate);
 
-		CartDTO cartDTO = modelMapper.map(cartRepository.save(cart), CartDTO.class);
-		cartDTO.setProducts(getProductsFromCartItems(cart.getCartItems()));
+		CartDTO cartDTO = mapCartToCartDTO(cartRepository.save(cart));
+		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 
 		return cartDTO;
 	}
@@ -162,11 +159,19 @@ public class CartServiceImpl implements CartService {
 		CartItem cartItemToDelete = cartItemRepository.findCartItemByCartIdAndProductId(cart.getId(), productId)
 			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId", productId));
 
-		cart.getCartItems().remove(cartItemToDelete);
+		cart.deleteCartItem(cartItemToDelete);
 		cartRepository.save(cart);
 
-		CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-		cartDTO.setProducts(getProductsFromCartItems(cart.getCartItems()));
+		CartDTO cartDTO = mapCartToCartDTO(cart);
+		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
+
+		return cartDTO;
+	}
+
+	private CartDTO mapCartToCartDTO(Cart cart) {
+		CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);;
+		UserDTO userDTO = mapUserToUserDTO(cart.getUser());
+		cartDTO.setUser(userDTO);
 
 		return cartDTO;
 	}
@@ -177,9 +182,9 @@ public class CartServiceImpl implements CartService {
 
 		List<CartDTO> cartDTOs = cartsPage.getContent().stream()
 			.map(cart -> {
-				CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-				cartDTO.setUser(convertUserToUserDTO(cart.getUser()));
-				cartDTO.setProducts(getProductsFromCartItems(cart.getCartItems()));
+				CartDTO cartDTO = mapCartToCartDTO(cart);
+				cartDTO.setUser(mapUserToUserDTO(cart.getUser()));
+				cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 				return cartDTO;
 			})
 			.toList();
@@ -195,7 +200,7 @@ public class CartServiceImpl implements CartService {
 		return cartsResponse;
 	}
 
-	private List<ProductDTO> getProductsFromCartItems(List<CartItem> cartItems) {
+	private List<ProductDTO> mapCartItemsToProductsDTOs(List<CartItem> cartItems) {
 		return cartItems.stream()
 			.map(cartItem -> {
 				ProductDTO productDTO = modelMapper.map(cartItem.getProduct(), ProductDTO.class);
@@ -205,7 +210,7 @@ public class CartServiceImpl implements CartService {
 			.toList();
 	}
 
-	private UserDTO convertUserToUserDTO(User user) {
+	private UserDTO mapUserToUserDTO(User user) {
 		UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
 		List<String> rolesStrings = user.getRoles().stream()

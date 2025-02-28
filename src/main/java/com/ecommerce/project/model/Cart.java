@@ -35,7 +35,7 @@ public class Cart {
 		totalPrice += cartItem.getPrice() * cartItem.getQuantity();
 	}
 
-	public void setCartItem(CartItem cartItem) {
+	public void updateCartItem(CartItem cartItem) {
 		CartItem cartItemToUpdate = cartItems.stream().filter(ci -> ci.getId().equals(cartItem.getId())).findFirst()
 			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getId()));
 		int cartItemIndex = cartItems.indexOf(cartItemToUpdate);
@@ -46,5 +46,10 @@ public class Cart {
 		cartItems.set(cartItemIndex, cartItemToUpdate);
 
 		totalPrice = cartItems.stream().mapToDouble(ci -> ci.getPrice() * ci.getQuantity()).sum();
+	}
+
+	public void deleteCartItem(CartItem cartItem) {
+		cartItems.remove(cartItem);
+		totalPrice -= cartItem.getPrice() * cartItem.getQuantity();
 	}
 }
