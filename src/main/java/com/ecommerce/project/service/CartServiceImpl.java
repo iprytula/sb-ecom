@@ -169,7 +169,7 @@ public class CartServiceImpl implements CartService {
 	}
 
 	private CartDTO mapCartToCartDTO(Cart cart) {
-		CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);;
+		CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
 		UserDTO userDTO = mapUserToUserDTO(cart.getUser());
 		cartDTO.setUser(userDTO);
 
