@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CartDTO {
 	private Long id;
+	private UserDTO user;
 	private Double totalPrice;
 	private List<ProductDTO> products = new ArrayList<>();
 	private Boolean isActive = true;

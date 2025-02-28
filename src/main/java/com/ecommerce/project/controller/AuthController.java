@@ -79,7 +79,7 @@ public class AuthController {
 			.collect(Collectors.toList());
 
 		UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
-			userDetails.getUsername(), roles);
+			userDetails.getUsername(), userDetails.getEmail(), roles);
 
 		return ResponseEntity.ok().header("Set-Cookie", jwtCookie.toString()).body(response);
 	}
@@ -153,7 +153,7 @@ public class AuthController {
 				.collect(Collectors.toList());
 
 			UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
-				userDetails.getUsername(), roles);
+				userDetails.getUsername(), userDetails.getEmail(), roles);
 			return ResponseEntity.ok(response);
 		} else {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

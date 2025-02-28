@@ -1,18 +1,17 @@
-package com.ecommerce.project.security.payload;
+package com.ecommerce.project.payload;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-public class UserInfoResponse {
+@NoArgsConstructor
+public class UserDTO {
 	private Long id;
 	private String username;
 	private String email;
 	private List<String> roles;
-//	private String jwtToken;
 }

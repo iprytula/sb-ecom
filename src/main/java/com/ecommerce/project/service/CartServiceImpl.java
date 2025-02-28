@@ -9,6 +9,7 @@ import com.ecommerce.project.model.User;
 import com.ecommerce.project.payload.CartDTO;
 import com.ecommerce.project.payload.CartsResponse;
 import com.ecommerce.project.payload.ProductDTO;
+import com.ecommerce.project.payload.UserDTO;
 import com.ecommerce.project.repository.CartItemRepository;
 import com.ecommerce.project.repository.CartRepository;
 import com.ecommerce.project.repository.ProductRepository;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -53,7 +53,13 @@ public class CartServiceImpl implements CartService {
 			throw new APIException("productId and quantity must be present and greater than 0.");
 		}
 
-		Cart cart = getActiveCartOrCreateOne();
+		User loggedInUser = authUtil.loggedInUser();
+		Cart cart = cartRepository.findActiveCartByUserId(loggedInUser.getId())
+			.orElseGet(() -> {
+				Cart newCart = new Cart();
+				newCart.setUser(loggedInUser);
+				return cartRepository.save(newCart);
+			});
 
 		Product product = productRepository.findById(productId)
 			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
@@ -79,6 +85,8 @@ public class CartServiceImpl implements CartService {
 			cartRepository.save(cart),
 			CartDTO.class
 		);
+
+		cartDTO.setUser(convertUserToUserDTO(loggedInUser));
 
 		List<ProductDTO> products = cart.getCartItems().stream()
 			.map(item -> {
@@ -111,6 +119,7 @@ public class CartServiceImpl implements CartService {
 			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", loggedInUserId));
 
 		CartDTO cartResponse = modelMapper.map(cart, CartDTO.class);
+		cartResponse.setUser(convertUserToUserDTO(authUtil.loggedInUser()));
 		cartResponse.setProducts(getProductsFromCartItems(cart.getCartItems()));
 
 		return cartResponse;
@@ -163,6 +172,7 @@ public class CartServiceImpl implements CartService {
 		List<CartDTO> cartDTOs = cartsPage.getContent().stream()
 			.map(cart -> {
 				CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+				cartDTO.setUser(convertUserToUserDTO(cart.getUser()));
 				cartDTO.setProducts(getProductsFromCartItems(cart.getCartItems()));
 				return cartDTO;
 			})
@@ -179,19 +189,6 @@ public class CartServiceImpl implements CartService {
 		return cartsResponse;
 	}
 
-	private Cart getActiveCartOrCreateOne() {
-		User loggedInUser = authUtil.loggedInUser();
-		Optional<Cart> userCart = cartRepository.findActiveCartByUserId(loggedInUser.getId());
-		if (userCart.isPresent()) {
-			return userCart.get();
-		}
-
-		Cart cart = new Cart();
-		cart.setUser(loggedInUser);
-
-		return cartRepository.save(cart);
-	}
-
 	private List<ProductDTO> getProductsFromCartItems(List<CartItem> cartItems) {
 		return cartItems.stream()
 			.map(cartItem -> {
@@ -200,5 +197,17 @@ public class CartServiceImpl implements CartService {
 				return productDTO;
 			})
 			.toList();
+	}
+
+	private UserDTO convertUserToUserDTO(User user) {
+		UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+
+		List<String> rolesStrings = user.getRoles().stream()
+			.map(role -> role.getRoleName().name())
+			.toList();
+
+		userDTO.setRoles(rolesStrings);
+
+		return userDTO;
 	}
 }
