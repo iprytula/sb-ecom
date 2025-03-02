@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConstants;
+import com.ecommerce.project.config.Authority;
 import com.ecommerce.project.payload.CartDTO;
 import com.ecommerce.project.payload.CartsResponse;
 import com.ecommerce.project.service.CartService;
@@ -29,7 +30,7 @@ public class CartController {
 	}
 
 	@GetMapping("/admin/carts")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<CartsResponse> getAllCarts(
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
@@ -50,7 +51,7 @@ public class CartController {
 		);
 	}
 
-	@PutMapping ("/carts/products/{productId}/update/quantity/{quantity}")
+	@PutMapping ("/carts/products/{productId}/quantity/{quantity}")
 	public ResponseEntity<CartDTO> updateProductQuantity(@PathVariable Long productId, @PathVariable Integer quantity) {
 		return new ResponseEntity<>(
 			cartService.updateCartItemQuantity(productId, quantity),

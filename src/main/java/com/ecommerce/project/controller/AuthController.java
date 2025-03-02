@@ -1,6 +1,6 @@
 package com.ecommerce.project.controller;
 
-import com.ecommerce.project.model.AppRole;
+import com.ecommerce.project.config.AppRoles;
 import com.ecommerce.project.model.Role;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.repository.RoleRepository;
@@ -103,26 +103,26 @@ public class AuthController {
 		Set<Role> roles = new HashSet<>();
 
 		if (strRoles == null) {
-			Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+			Role userRole = roleRepository.findByRoleName(AppRoles.ROLE_USER)
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 			roles.add(userRole);
 		} else {
 			strRoles.forEach(role -> {
 				switch (role) {
 					case "admin":
-						Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+						Role adminRole = roleRepository.findByRoleName(AppRoles.ROLE_ADMIN)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 						roles.add(adminRole);
 
 						break;
 					case "seller":
-						Role modRole = roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+						Role modRole = roleRepository.findByRoleName(AppRoles.ROLE_SELLER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 						roles.add(modRole);
 
 						break;
 					default:
-						Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+						Role userRole = roleRepository.findByRoleName(AppRoles.ROLE_USER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 						roles.add(userRole);
 				}

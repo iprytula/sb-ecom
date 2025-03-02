@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConstants;
+import com.ecommerce.project.config.Authority;
 import com.ecommerce.project.payload.CategoriesResponse;
 import com.ecommerce.project.payload.CategoryDTO;
 import com.ecommerce.project.service.CategoryServiceImpl;
@@ -35,7 +36,7 @@ public class CategoryController {
 	}
 
 	@PostMapping("/admin/categories")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO category) {
 		return new ResponseEntity<>(
 			categoryServiceImpl.createCategory(category),
@@ -44,7 +45,7 @@ public class CategoryController {
 	}
 
 	@PutMapping("/admin/categories/{id}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<CategoryDTO> updateCategory(
 		@RequestBody CategoryDTO category, @PathVariable int id
 	) {
@@ -55,7 +56,7 @@ public class CategoryController {
 	}
 
 	@DeleteMapping("/admin/categories/{categoryId}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable long categoryId) {
 		return new ResponseEntity<>(
 			categoryServiceImpl.deleteCategory(categoryId),

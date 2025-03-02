@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
@@ -18,12 +17,10 @@ public class Role {
 	@Column(name = "role_id")
 	private Integer id;
 
-	@ToString.Exclude
-	@Enumerated(EnumType.STRING)
 	@Column(length = 20, name = "role_name")
-	private AppRole roleName;
+	private String roleName;
 
-	public Role(AppRole roleName) {
+	public Role(String roleName) {
 		this.roleName = roleName;
 	}
 }

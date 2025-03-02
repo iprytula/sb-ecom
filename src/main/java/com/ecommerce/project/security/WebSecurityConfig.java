@@ -1,6 +1,6 @@
 package com.ecommerce.project.security;
 
-import com.ecommerce.project.model.AppRole;
+import com.ecommerce.project.config.AppRoles;
 import com.ecommerce.project.model.Role;
 import com.ecommerce.project.model.User;
 import com.ecommerce.project.repository.RoleRepository;
@@ -113,21 +113,21 @@ public class WebSecurityConfig {
 	public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
 			// Retrieve or create roles
-			Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+			Role userRole = roleRepository.findByRoleName(AppRoles.ROLE_USER)
 				.orElseGet(() -> {
-					Role newUserRole = new Role(AppRole.ROLE_USER);
+					Role newUserRole = new Role(AppRoles.ROLE_USER);
 					return roleRepository.save(newUserRole);
 				});
 
-			Role sellerRole = roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+			Role sellerRole = roleRepository.findByRoleName(AppRoles.ROLE_SELLER)
 				.orElseGet(() -> {
-					Role newSellerRole = new Role(AppRole.ROLE_SELLER);
+					Role newSellerRole = new Role(AppRoles.ROLE_SELLER);
 					return roleRepository.save(newSellerRole);
 				});
 
-			Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+			Role adminRole = roleRepository.findByRoleName(AppRoles.ROLE_ADMIN)
 				.orElseGet(() -> {
-					Role newAdminRole = new Role(AppRole.ROLE_ADMIN);
+					Role newAdminRole = new Role(AppRoles.ROLE_ADMIN);
 					return roleRepository.save(newAdminRole);
 				});
 

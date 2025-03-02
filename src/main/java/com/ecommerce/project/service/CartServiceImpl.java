@@ -2,10 +2,7 @@ package com.ecommerce.project.service;
 
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
-import com.ecommerce.project.model.Cart;
-import com.ecommerce.project.model.CartItem;
-import com.ecommerce.project.model.Product;
-import com.ecommerce.project.model.User;
+import com.ecommerce.project.model.*;
 import com.ecommerce.project.payload.*;
 import com.ecommerce.project.repository.CartItemRepository;
 import com.ecommerce.project.repository.CartRepository;
@@ -212,7 +209,7 @@ public class CartServiceImpl implements CartService {
 		UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
 		List<String> rolesStrings = user.getRoles().stream()
-			.map(role -> role.getRoleName().name())
+			.map(Role::getRoleName)
 			.toList();
 
 		userDTO.setRoles(rolesStrings);

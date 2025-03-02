@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConstants;
+import com.ecommerce.project.config.Authority;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductsResponse;
 import com.ecommerce.project.service.ProductServiceImpl;
@@ -27,7 +28,7 @@ public class ProductController {
 	}
 
 	@PostMapping("/admin/categories/{categoryId}/product")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<ProductDTO> addProduct(
 		@RequestBody @Validated(AddProductValidationGroup.class) ProductDTO productDTO,
 		@PathVariable Long categoryId
@@ -77,7 +78,7 @@ public class ProductController {
 	}
 
 	@PutMapping("/admin/products/{productId}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<ProductDTO> updateProduct(
 		@PathVariable Long productId,
 		@RequestBody @Valid ProductDTO productDTO
@@ -86,13 +87,13 @@ public class ProductController {
 	}
 
 	@DeleteMapping("/admin/products/{productId}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<ProductDTO> deleteProduct(@PathVariable Long productId) {
 		return new ResponseEntity<>(productServiceImpl.deleteProduct(productId), HttpStatus.OK);
 	}
 
 	@PutMapping("/admin/products/{productId}/image")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<ProductDTO> updateProductImage(
 		@PathVariable Long productId,
 		@RequestParam("image") MultipartFile image
