@@ -2,10 +2,14 @@ package com.ecommerce.project.service;
 
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
+import com.ecommerce.project.model.Cart;
+import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductsResponse;
+import com.ecommerce.project.repository.CartItemRepository;
+import com.ecommerce.project.repository.CartRepository;
 import com.ecommerce.project.repository.CategoryRepository;
 import com.ecommerce.project.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
@@ -16,9 +20,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +32,8 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
+	private final CartItemRepository cartItemRepository;
+	private final CartRepository cartRepository;
 	private final ModelMapper modelMapper;
 	private final FileServiceImpl fileServiceImpl;
 
@@ -36,11 +44,15 @@ public class ProductServiceImpl implements ProductService {
 	public ProductServiceImpl(
 		ProductRepository productRepository,
 		CategoryRepository categoryRepository,
+		CartItemRepository cartItemRepository,
+		CartRepository cartRepository,
 		ModelMapper modelMapper,
 		FileServiceImpl fileServiceImpl
 	) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
+		this.cartItemRepository = cartItemRepository;
+		this.cartRepository = cartRepository;
 		this.modelMapper = modelMapper;
 		this.fileServiceImpl = fileServiceImpl;
 	}
@@ -92,14 +104,38 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	@Transactional
 	public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
 		Product existingProduct = productRepository.findById(productId)
 			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
-		modelMapper.typeMap(ProductDTO.class, Product.class).addMappings(mapper -> mapper.skip(Product::setId));
+		modelMapper.typeMap(ProductDTO.class, Product.class)
+			.addMappings(mapper -> {
+				if (productDTO.getImage() == null) {
+					mapper.skip(Product::setImage);
+				}
+				mapper.skip(Product::setId);
+			});
 		modelMapper.map(productDTO, existingProduct);
 
 		Product updatedProduct = productRepository.save(existingProduct);
+
+		List<CartItem> cartItemsToSave = new ArrayList<>();
+		cartItemRepository.findCartItemsInActiveCartsByProductId(productId)
+			.ifPresent(cartItems -> cartItems.forEach(cartItem -> {
+				cartItem.setProduct(updatedProduct);
+				cartItem.setPrice(updatedProduct.getPrice());
+				cartItemsToSave.add(cartItem);
+			}));
+		cartItemRepository.saveAll(cartItemsToSave);
+
+		List<Cart> cartsToSave = new ArrayList<>();
+		cartRepository.findActiveCartsByProductId(productId)
+			.ifPresent(carts -> carts.forEach(cart -> {
+				cart.recalculateTotalPrice();
+				cartsToSave.add(cart);
+			}));
+		cartRepository.saveAll(cartsToSave);
 
 		return modelMapper.map(updatedProduct, ProductDTO.class);
 	}

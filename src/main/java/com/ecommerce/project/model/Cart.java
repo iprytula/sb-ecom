@@ -55,4 +55,8 @@ public class Cart {
 		cartItems.remove(cartItem);
 		totalPrice -= cartItem.getPrice() * cartItem.getQuantity();
 	}
+
+	public void recalculateTotalPrice() {
+		totalPrice = cartItems.stream().mapToDouble(ci -> ci.getPrice() * ci.getQuantity()).sum();
+	}
 }
