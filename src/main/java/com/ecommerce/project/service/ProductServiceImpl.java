@@ -3,7 +3,6 @@ package com.ecommerce.project.service;
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Cart;
-import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.payload.ProductDTO;
@@ -32,7 +31,6 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
-	private final CartItemRepository cartItemRepository;
 	private final CartRepository cartRepository;
 	private final ModelMapper modelMapper;
 	private final FileServiceImpl fileServiceImpl;
@@ -51,7 +49,6 @@ public class ProductServiceImpl implements ProductService {
 	) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
-		this.cartItemRepository = cartItemRepository;
 		this.cartRepository = cartRepository;
 		this.modelMapper = modelMapper;
 		this.fileServiceImpl = fileServiceImpl;
@@ -118,33 +115,42 @@ public class ProductServiceImpl implements ProductService {
 			});
 		modelMapper.map(productDTO, existingProduct);
 
-		Product updatedProduct = productRepository.save(existingProduct);
+		ProductDTO updatedProductDTO = modelMapper.map(productRepository.save(existingProduct), ProductDTO.class);
 
-		List<CartItem> cartItemsToSave = new ArrayList<>();
-		cartItemRepository.findCartItemsInActiveCartsByProductId(productId)
-			.ifPresent(cartItems -> cartItems.forEach(cartItem -> {
-				cartItem.setProduct(updatedProduct);
-				cartItem.setPrice(updatedProduct.getPrice());
-				cartItemsToSave.add(cartItem);
-			}));
-		cartItemRepository.saveAll(cartItemsToSave);
+		List<Cart> cartsToModify = cartRepository.findActiveCartsByProductId(productId).orElseGet(ArrayList::new);
+		if (!cartsToModify.isEmpty()) {
+			cartsToModify.forEach(cart -> cart.getCartItems()
+				.stream()
+				.filter(ci -> ci.getProduct().getId().equals(productId))
+				.findFirst()
+				.ifPresent(cart::updateCartItem)
+			);
 
-		List<Cart> cartsToSave = new ArrayList<>();
-		cartRepository.findActiveCartsByProductId(productId)
-			.ifPresent(carts -> carts.forEach(cart -> {
-				cart.recalculateTotalPrice();
-				cartsToSave.add(cart);
-			}));
-		cartRepository.saveAll(cartsToSave);
+			cartRepository.saveAll(cartsToModify);
+		}
 
-		return modelMapper.map(updatedProduct, ProductDTO.class);
+		return updatedProductDTO;
 	}
 
+	@Transactional
 	@Override
 	public ProductDTO deleteProduct(Long productId) {
 		Product productToDelete = productRepository.findById(productId)
 			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+
 		productRepository.delete(productToDelete);
+
+		List<Cart> cartsToModify = cartRepository.findActiveCartsByProductId(productId).orElseGet(ArrayList::new);
+		if (!cartsToModify.isEmpty()) {
+			cartsToModify.forEach(cart -> {
+				cart.getCartItems().stream()
+					.filter(ci -> ci.getProduct().getId().equals(productId))
+					.findFirst()
+					.ifPresent(cart::deleteCartItem);
+			});
+
+			cartRepository.saveAll(cartsToModify);
+		}
 
 		return modelMapper.map(productToDelete, ProductDTO.class);
 	}

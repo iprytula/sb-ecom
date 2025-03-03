@@ -13,7 +13,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
 	@Query("""
 		SELECT c FROM Cart c
-		WHERE c.isActive = true AND c.id IN (SELECT ci.cart.id FROM CartItem ci WHERE ci.product.id = ?1)
+		WHERE c.isActive = true AND c.id
+		IN (SELECT ci.cart.id FROM CartItem ci WHERE ci.product.id = ?1)
 		""")
 	Optional<List<Cart>> findActiveCartsByProductId(Long productId);
 }

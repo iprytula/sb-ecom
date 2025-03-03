@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Data
@@ -34,29 +35,45 @@ public class Cart {
 	private Date orderDate = null;
 
 	public void addCartItem(CartItem cartItem) {
-		cartItems.add(cartItem);
-		totalPrice += cartItem.getPrice() * cartItem.getQuantity();
+		Optional<CartItem> existingCartItem = cartItems.stream()
+			.filter(ci -> ci.getProduct().getId().equals(cartItem.getProduct().getId()))
+			.findFirst();
+
+		if (existingCartItem.isPresent()) {
+			existingCartItem.get().setQuantity(existingCartItem.get().getQuantity() + cartItem.getQuantity());
+		} else {
+			cartItems.add(cartItem);
+		}
+
+		recalculateTotalPrice();
 	}
 
 	public void updateCartItem(CartItem cartItem) {
-		CartItem cartItemToUpdate = cartItems.stream().filter(ci -> ci.getId().equals(cartItem.getId())).findFirst()
+		CartItem cartItemToUpdate = cartItems.stream()
+			.filter(ci -> ci.getId().equals(cartItem.getId()))
+			.findFirst()
 			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getId()));
-		int cartItemIndex = cartItems.indexOf(cartItemToUpdate);
 
 		cartItemToUpdate.setQuantity(cartItem.getQuantity());
-		cartItemToUpdate.setPrice(cartItem.getPrice());
 
-		cartItems.set(cartItemIndex, cartItemToUpdate);
-
-		totalPrice = cartItems.stream().mapToDouble(ci -> ci.getPrice() * ci.getQuantity()).sum();
+		recalculateTotalPrice();
 	}
 
 	public void deleteCartItem(CartItem cartItem) {
-		cartItems.remove(cartItem);
-		totalPrice -= cartItem.getPrice() * cartItem.getQuantity();
+		CartItem cartItemToDelete = cartItems.stream()
+			.filter(ci -> ci.getProduct().getId().equals(cartItem.getProduct().getId()))
+			.findFirst()
+			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getId()));
+
+		cartItems.remove(cartItemToDelete);
+
+		recalculateTotalPrice();
 	}
 
-	public void recalculateTotalPrice() {
-		totalPrice = cartItems.stream().mapToDouble(ci -> ci.getPrice() * ci.getQuantity()).sum();
+	private void recalculateTotalPrice() {
+		totalPrice = cartItems.stream()
+			.mapToDouble(ci -> ci.getProduct().getPrice() * ci.getQuantity())
+			.sum();
 	}
+
 }
