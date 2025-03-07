@@ -17,7 +17,7 @@ public class AuthUtil {
 		this.userRepository = userRepository;
 	}
 
-	public User loggedInUser() {
+	public User getLoggedInUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		return userRepository.findByUserName(authentication.getName())

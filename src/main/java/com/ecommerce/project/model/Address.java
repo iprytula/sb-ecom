@@ -1,8 +1,6 @@
 package com.ecommerce.project.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,30 +18,25 @@ public class Address {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
-	@Size(min = 5, message = "Street name should be at least 5 characters")
+	@Column(nullable = false)
 	private String street;
 
-	@NotBlank
-	@Size(min = 5, message = "Building name should be at least 5 characters")
+	@Column(nullable = false)
 	private String buildingName;
 
-	@NotBlank
-	@Size(min = 4, message = "City name should be at least 4 characters")
+	@Column(nullable = false)
 	private String city;
 
-	@NotBlank
-	@Size(min = 2, message = "City name should be at least 5 characters")
+	@Column(nullable = false)
 	private String state;
 
-	@NotBlank
-	@Size(min = 4, message = "Zip code name should be at least 4 characters")
+	@Column(nullable = false)
 	private String zipCode;
 
-	@NotBlank
-	@Size(min = 2, message = "Country name should be at least 2 characters")
+	@Column(nullable = false)
 	private String country;
 
-	@ManyToMany(mappedBy = "addresses")
-	private List<User> users = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id")
+	private User user;
 }
