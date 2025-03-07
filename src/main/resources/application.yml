@@ -4,12 +4,16 @@ spring:
 #  h2:
 #    console:
 #      enabled: true
-    mysql:
-      console:
-        enabled: true
+#    mysql:
+#      console:
+#        enabled: true
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/sb_ecommerce
+#    username: root
+#    password: root
   datasource:
-    url: jdbc:mysql://localhost:3306/sb_ecommerce
-    username: root
+    url: jdbc:postgresql://localhost:5432/sb_ecommerce
+    username: postgres
     password: root
   jpa:
     show-sql: true
@@ -17,7 +21,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
   app:
