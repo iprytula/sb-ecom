@@ -5,8 +5,8 @@ import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Cart;
 import com.ecommerce.project.model.Category;
 import com.ecommerce.project.model.Product;
+import com.ecommerce.project.payload.PageableResponse;
 import com.ecommerce.project.payload.ProductDTO;
-import com.ecommerce.project.payload.ProductsResponse;
 import com.ecommerce.project.repository.CartItemRepository;
 import com.ecommerce.project.repository.CartRepository;
 import com.ecommerce.project.repository.CategoryRepository;
@@ -72,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductsResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+	public PageableResponse<ProductDTO> getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 		Sort sortByAndOrder =
 			sortOrder.equalsIgnoreCase("asc")
 				? Sort.by(sortBy).ascending()
@@ -84,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductsResponse getProductsByCategoryId(
+	public PageableResponse<ProductDTO> getProductsByCategoryId(
 		Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, getSortByAndOrder(sortBy, sortOrder));
 		Page<Product> productsPage = productRepository.findByCategoryId(pageDetails, categoryId);
@@ -92,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductsResponse getProductsByKeyword(
+	public PageableResponse<ProductDTO> getProductsByKeyword(
 		String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder
 	) {
 		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, getSortByAndOrder(sortBy, sortOrder));
@@ -168,7 +168,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 
-	private ProductsResponse getProductsResponse(Integer pageNumber, Integer pageSize, Page<Product> productsPage) {
+	private PageableResponse<ProductDTO> getProductsResponse(Integer pageNumber, Integer pageSize, Page<Product> productsPage) {
 		List<Product> products = productsPage.getContent();
 
 		if (products.isEmpty()) {
@@ -178,7 +178,7 @@ public class ProductServiceImpl implements ProductService {
 		List<ProductDTO> productDTOList = products.stream()
 			.map(product -> modelMapper.map(product, ProductDTO.class)).toList();
 
-		ProductsResponse productsResponse = new ProductsResponse();
+		PageableResponse<ProductDTO> productsResponse = new PageableResponse<>();
 		productsResponse.setContent(productDTOList);
 		productsResponse.setTotalElements(productsPage.getTotalElements());
 		productsResponse.setTotalPages(productsPage.getTotalPages());

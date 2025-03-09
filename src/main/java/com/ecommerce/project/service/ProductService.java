@@ -1,7 +1,7 @@
 package com.ecommerce.project.service;
 
+import com.ecommerce.project.payload.PageableResponse;
 import com.ecommerce.project.payload.ProductDTO;
-import com.ecommerce.project.payload.ProductsResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -9,11 +9,11 @@ import java.io.IOException;
 public interface ProductService {
 	ProductDTO addProduct(ProductDTO product, Long categoryId);
 
-	ProductsResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+	PageableResponse<ProductDTO> getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
-	ProductsResponse getProductsByCategoryId(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+	PageableResponse<ProductDTO> getProductsByCategoryId(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
-	ProductsResponse getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+	PageableResponse<ProductDTO> getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
 	ProductDTO updateProduct(Long productId, ProductDTO productDTO);
 

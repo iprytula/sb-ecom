@@ -2,8 +2,8 @@ package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConstants;
 import com.ecommerce.project.config.Authority;
+import com.ecommerce.project.payload.PageableResponse;
 import com.ecommerce.project.payload.ProductDTO;
-import com.ecommerce.project.payload.ProductsResponse;
 import com.ecommerce.project.service.ProductServiceImpl;
 import com.ecommerce.project.validation.AddProductValidationGroup;
 import jakarta.validation.Valid;
@@ -37,7 +37,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/public/products")
-	public ResponseEntity<ProductsResponse> getAllProducts(
+	public ResponseEntity<PageableResponse<ProductDTO>> getAllProducts(
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
 		@RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCTS_BY) String sortBy,
@@ -50,7 +50,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/public/categories/{categoryId}/products")
-	public ResponseEntity<ProductsResponse> getProductsByCategory(
+	public ResponseEntity<PageableResponse<ProductDTO>> getProductsByCategory(
 		@PathVariable Long categoryId,
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
@@ -64,7 +64,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/public/products/keyword/{keyword}")
-	public ResponseEntity<ProductsResponse> getProductsByKeyword(
+	public ResponseEntity<PageableResponse<ProductDTO>> getProductsByKeyword(
 		@PathVariable String keyword,
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,

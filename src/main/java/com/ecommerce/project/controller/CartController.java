@@ -2,8 +2,9 @@ package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConstants;
 import com.ecommerce.project.config.Authority;
+import com.ecommerce.project.payload.CartAdminDTO;
 import com.ecommerce.project.payload.CartDTO;
-import com.ecommerce.project.payload.CartsResponse;
+import com.ecommerce.project.payload.PageableResponse;
 import com.ecommerce.project.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class CartController {
 
 	@GetMapping("/admin/carts")
 	@PreAuthorize(Authority.ADMIN)
-	public ResponseEntity<CartsResponse> getAllCarts(
+	public ResponseEntity<PageableResponse<CartAdminDTO>> getAllCarts(
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
 		@RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CARTS_BY) String sortBy,

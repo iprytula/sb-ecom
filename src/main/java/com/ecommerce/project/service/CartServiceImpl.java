@@ -91,7 +91,7 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public CartsResponse getAllCarts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+	public PageableResponse<CartAdminDTO> getAllCarts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 		Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
 			? Sort.by(sortBy).ascending()
 			: Sort.by(sortBy).descending();
@@ -171,7 +171,7 @@ public class CartServiceImpl implements CartService {
 		return modelMapper.map(cart, CartDTO.class);
 	}
 
-	private CartsResponse getCartsResponse(Integer pageNumber, Integer pageSize, Page<Cart> cartsPage) {
+	private PageableResponse<CartAdminDTO> getCartsResponse(Integer pageNumber, Integer pageSize, Page<Cart> cartsPage) {
 		if (cartsPage.isEmpty())
 			throw new ResourceNotFoundException("No carts found");
 
@@ -184,7 +184,7 @@ public class CartServiceImpl implements CartService {
 			})
 			.toList();
 
-		CartsResponse cartsResponse = new CartsResponse();
+		PageableResponse<CartAdminDTO> cartsResponse = new PageableResponse<>();
 		cartsResponse.setContent(cartDTOs);
 		cartsResponse.setTotalElements(cartsPage.getTotalElements());
 		cartsResponse.setTotalPages(cartsPage.getTotalPages());

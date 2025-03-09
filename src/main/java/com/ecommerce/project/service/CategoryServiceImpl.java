@@ -3,8 +3,8 @@ package com.ecommerce.project.service;
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Category;
-import com.ecommerce.project.payload.CategoriesResponse;
 import com.ecommerce.project.payload.CategoryDTO;
+import com.ecommerce.project.payload.PageableResponse;
 import com.ecommerce.project.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public CategoriesResponse getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+	public PageableResponse<CategoryDTO> getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 		Sort sortByAndOrder =
 			sortOrder.equalsIgnoreCase("asc")
 				? Sort.by(sortBy).ascending()
@@ -51,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 			.map(category -> modelMapper.map(category, CategoryDTO.class))
 			.toList();
 
-		CategoriesResponse categoriesResponse = new CategoriesResponse();
+		PageableResponse<CategoryDTO> categoriesResponse = new PageableResponse<>();
 		categoriesResponse.setContent(categoryDTOS);
 		categoriesResponse.setPageNumber(pageNumber);
 		categoriesResponse.setPageSize(pageSize);

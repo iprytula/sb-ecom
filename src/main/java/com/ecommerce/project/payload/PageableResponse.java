@@ -9,8 +9,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoriesResponse {
-	private List<CategoryDTO> content;
+public class PageableResponse<T> {
+	private List<T> content;
 	private Integer pageNumber;
 	private Integer pageSize;
 	private Long totalElements;

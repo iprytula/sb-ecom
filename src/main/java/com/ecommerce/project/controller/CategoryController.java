@@ -2,8 +2,8 @@ package com.ecommerce.project.controller;
 
 import com.ecommerce.project.config.AppConstants;
 import com.ecommerce.project.config.Authority;
-import com.ecommerce.project.payload.CategoriesResponse;
 import com.ecommerce.project.payload.CategoryDTO;
+import com.ecommerce.project.payload.PageableResponse;
 import com.ecommerce.project.service.CategoryServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class CategoryController {
 	}
 
 	@GetMapping("/public/categories")
-	public ResponseEntity<CategoriesResponse> getCategories(
+	public ResponseEntity<PageableResponse<CategoryDTO>> getCategories(
 		@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
 		@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
 		@RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORIES_BY) String sortBy,
