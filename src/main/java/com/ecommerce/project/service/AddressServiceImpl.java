@@ -10,6 +10,8 @@ import com.ecommerce.project.util.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -47,10 +49,15 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public PageableResponse<AddressDTO> getAllAddresses(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-		PageableResponse<AddressDTO> response = new PageableResponse<>();
-		List<Address> addresses = addressRepository.findAll();
-		response.setContent(addresses.stream().map(address -> modelMapper.map(address, AddressDTO.class)).toList());
-		return null;
+		Sort sortByAndOrder =
+			sortOrder.equalsIgnoreCase("asc")
+				? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+
+		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+		Page<Address> addressesPage = addressRepository.findAll(pageDetails);
+
+		return getAddressesResponse(pageNumber, pageSize, addressesPage);
 	}
 
 	private PageableResponse<AddressDTO> getAddressesResponse(Integer pageNumber, Integer pageSize, Page<Address> addressesPage) {
@@ -74,11 +81,5 @@ public class AddressServiceImpl implements AddressService {
 		pageableResponse.setLastPage(addressesPage.isLast());
 
 		return pageableResponse;
-	}
-
-	private Sort getSortByAndOrder(String sortBy, String sortOrder) {
-		return sortOrder.equalsIgnoreCase("asc")
-			? Sort.by(sortBy).ascending()
-			: Sort.by(sortBy).descending();
 	}
 }
