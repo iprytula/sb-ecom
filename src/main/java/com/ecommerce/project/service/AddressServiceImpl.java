@@ -60,6 +60,22 @@ public class AddressServiceImpl implements AddressService {
 		return getAddressesResponse(pageNumber, pageSize, addressesPage);
 	}
 
+	@Override
+	public List<AddressDTO> getLoggedInUserAddresses() {
+		User user = authUtil.getLoggedInUser();
+
+		return addressRepository.findAllByUserId(user.getId()).stream()
+			.map(address -> modelMapper.map(address, AddressDTO.class))
+			.toList();
+	}
+
+	@Override
+	public AddressDTO getAddressById(Long addressId) {
+		return addressRepository.findById(addressId)
+			.map(address -> modelMapper.map(address, AddressDTO.class))
+			.orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
+	}
+
 	private PageableResponse<AddressDTO> getAddressesResponse(Integer pageNumber, Integer pageSize, Page<Address> addressesPage) {
 		List<Address> addresses = addressesPage.getContent();
 

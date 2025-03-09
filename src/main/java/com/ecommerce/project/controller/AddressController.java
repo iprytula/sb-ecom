@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class AddressController {
@@ -41,6 +43,22 @@ public class AddressController {
 	) {
 		return new ResponseEntity<>(
 			addressService.getAllAddresses(pageNumber, pageSize, sortBy, sortOrder),
+			HttpStatus.OK
+		);
+	}
+
+	@GetMapping("/addresses/user/me")
+	public ResponseEntity<List<AddressDTO>> getLoggedInUserAddresses() {
+		return new ResponseEntity<>(
+			addressService.getLoggedInUserAddresses(),
+			HttpStatus.OK
+		);
+	}
+
+	@GetMapping("/addresses/{addressId}")
+	public ResponseEntity<AddressDTO> getAddressById(@PathVariable Long addressId) {
+		return new ResponseEntity<>(
+			addressService.getAddressById(addressId),
 			HttpStatus.OK
 		);
 	}
