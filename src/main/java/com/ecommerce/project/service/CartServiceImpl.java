@@ -98,8 +98,28 @@ public class CartServiceImpl implements CartService {
 
 		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 		Page<Cart> cartsPage = cartRepository.findAll(pageDetails);
+		List<Cart> carts = cartsPage.getContent();
 
-		return getCartsResponse(pageNumber, pageSize, cartsPage);
+		if (carts.isEmpty())
+			throw new ResourceNotFoundException("No carts found");
+
+		List<CartAdminDTO> cartDTOs = cartsPage.getContent().stream()
+			.map(cart -> {
+				CartAdminDTO cartDTO = (CartAdminDTO) mapCartToCartDTO(cart, true);
+				cartDTO.setUser(mapUserToUserDTO(cart.getUser()));
+				cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
+				return cartDTO;
+			})
+			.toList();
+
+		return PageableResponse.<CartAdminDTO>builder()
+			.content(cartDTOs)
+			.totalElements(cartsPage.getTotalElements())
+			.totalPages(cartsPage.getTotalPages())
+			.pageNumber(pageNumber)
+			.pageSize(pageSize)
+			.lastPage(cartsPage.isLast())
+			.build();
 }
 
 	@Override
@@ -169,30 +189,6 @@ public class CartServiceImpl implements CartService {
 		}
 
 		return modelMapper.map(cart, CartDTO.class);
-	}
-
-	private PageableResponse<CartAdminDTO> getCartsResponse(Integer pageNumber, Integer pageSize, Page<Cart> cartsPage) {
-		if (cartsPage.isEmpty())
-			throw new ResourceNotFoundException("No carts found");
-
-		List<CartAdminDTO> cartDTOs = cartsPage.getContent().stream()
-			.map(cart -> {
-				CartAdminDTO cartDTO = (CartAdminDTO) mapCartToCartDTO(cart, true);
-				cartDTO.setUser(mapUserToUserDTO(cart.getUser()));
-				cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
-				return cartDTO;
-			})
-			.toList();
-
-		PageableResponse<CartAdminDTO> cartsResponse = new PageableResponse<>();
-		cartsResponse.setContent(cartDTOs);
-		cartsResponse.setTotalElements(cartsPage.getTotalElements());
-		cartsResponse.setTotalPages(cartsPage.getTotalPages());
-		cartsResponse.setPageNumber(pageNumber);
-		cartsResponse.setPageSize(pageSize);
-		cartsResponse.setLastPage(cartsPage.isLast());
-
-		return cartsResponse;
 	}
 
 	private List<ProductDTO> mapCartItemsToProductsDTOs(List<CartItem> cartItems) {

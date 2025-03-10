@@ -51,15 +51,14 @@ public class CategoryServiceImpl implements CategoryService {
 			.map(category -> modelMapper.map(category, CategoryDTO.class))
 			.toList();
 
-		PageableResponse<CategoryDTO> categoriesResponse = new PageableResponse<>();
-		categoriesResponse.setContent(categoryDTOS);
-		categoriesResponse.setPageNumber(pageNumber);
-		categoriesResponse.setPageSize(pageSize);
-		categoriesResponse.setTotalPages(categoryPage.getTotalPages());
-		categoriesResponse.setTotalElements(categoryPage.getTotalElements());
-		categoriesResponse.setLastPage(categoryPage.isLast());
-
-		return categoriesResponse;
+		return PageableResponse.<CategoryDTO>builder()
+			.content(categoryDTOS)
+			.pageNumber(pageNumber)
+			.pageSize(pageSize)
+			.totalPages(categoryPage.getTotalPages())
+			.totalElements(categoryPage.getTotalElements())
+			.lastPage(categoryPage.isLast())
+			.build();
 	}
 
 	@Override

@@ -178,17 +178,16 @@ public class ProductServiceImpl implements ProductService {
 		List<ProductDTO> productDTOList = products.stream()
 			.map(product -> modelMapper.map(product, ProductDTO.class)).toList();
 
-		PageableResponse<ProductDTO> productsResponse = new PageableResponse<>();
-		productsResponse.setContent(productDTOList);
-		productsResponse.setTotalElements(productsPage.getTotalElements());
-		productsResponse.setTotalPages(productsPage.getTotalPages());
-		productsResponse.setPageNumber(pageNumber);
-		productsResponse.setPageSize(pageSize);
-		productsResponse.setTotalPages(productsPage.getTotalPages());
-		productsResponse.setTotalElements(productsPage.getTotalElements());
-		productsResponse.setLastPage(productsPage.isLast());
-
-		return productsResponse;
+		return PageableResponse.<ProductDTO>builder()
+			.content(productDTOList)
+			.totalElements(productsPage.getTotalElements())
+			.totalPages(productsPage.getTotalPages())
+			.pageNumber(pageNumber)
+			.pageSize(pageSize)
+			.totalPages(productsPage.getTotalPages())
+			.totalElements(productsPage.getTotalElements())
+			.lastPage(productsPage.isLast())
+			.build();
 	}
 
 	private Sort getSortByAndOrder(String sortBy, String sortOrder) {
@@ -196,5 +195,4 @@ public class ProductServiceImpl implements ProductService {
 			? Sort.by(sortBy).ascending()
 			: Sort.by(sortBy).descending();
 	}
-
 }

@@ -56,8 +56,25 @@ public class AddressServiceImpl implements AddressService {
 
 		Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 		Page<Address> addressesPage = addressRepository.findAll(pageDetails);
+		List<Address> addresses = addressesPage.getContent();
 
-		return getAddressesResponse(pageNumber, pageSize, addressesPage);
+		if (addresses.isEmpty()) {
+			throw new ResourceNotFoundException("No addresses found");
+		}
+
+		List<AddressDTO> addressesDTOs = addresses.stream()
+			.map(address -> modelMapper.map(address, AddressDTO.class)).toList();
+
+		return PageableResponse.<AddressDTO>builder()
+			.content(addressesDTOs)
+			.totalElements(addressesPage.getTotalElements())
+			.totalPages(addressesPage.getTotalPages())
+			.pageNumber(pageNumber)
+			.pageSize(pageSize)
+			.totalPages(addressesPage.getTotalPages())
+			.totalElements(addressesPage.getTotalElements())
+			.lastPage(addressesPage.isLast())
+			.build();
 	}
 
 	@Override
@@ -74,28 +91,5 @@ public class AddressServiceImpl implements AddressService {
 		return addressRepository.findById(addressId)
 			.map(address -> modelMapper.map(address, AddressDTO.class))
 			.orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
-	}
-
-	private PageableResponse<AddressDTO> getAddressesResponse(Integer pageNumber, Integer pageSize, Page<Address> addressesPage) {
-		List<Address> addresses = addressesPage.getContent();
-
-		if (addresses.isEmpty()) {
-			throw new ResourceNotFoundException("No addresses found");
-		}
-
-		List<AddressDTO> addressesDTOs = addresses.stream()
-			.map(address -> modelMapper.map(address, AddressDTO.class)).toList();
-
-		PageableResponse<AddressDTO> pageableResponse = new PageableResponse<>();
-		pageableResponse.setContent(addressesDTOs);
-		pageableResponse.setTotalElements(addressesPage.getTotalElements());
-		pageableResponse.setTotalPages(addressesPage.getTotalPages());
-		pageableResponse.setPageNumber(pageNumber);
-		pageableResponse.setPageSize(pageSize);
-		pageableResponse.setTotalPages(addressesPage.getTotalPages());
-		pageableResponse.setTotalElements(addressesPage.getTotalElements());
-		pageableResponse.setLastPage(addressesPage.isLast());
-
-		return pageableResponse;
 	}
 }
