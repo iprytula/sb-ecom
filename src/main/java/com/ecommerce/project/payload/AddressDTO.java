@@ -35,4 +35,6 @@ public class AddressDTO {
 	@NotBlank
 	@Size(min = 2, message = "Country name should be at least 2 characters")
 	private String country;
+
+	private Long userId;
 }

@@ -47,7 +47,7 @@ public class AddressController {
 		);
 	}
 
-	@GetMapping("/addresses/user/me")
+	@GetMapping("/addresses/me")
 	public ResponseEntity<List<AddressDTO>> getLoggedInUserAddresses() {
 		return new ResponseEntity<>(
 			addressService.getLoggedInUserAddresses(),
@@ -55,10 +55,36 @@ public class AddressController {
 		);
 	}
 
-	@GetMapping("/addresses/{addressId}")
+	@GetMapping("/addresses/user/{userId}")
+	@PreAuthorize(Authority.ADMIN)
+	public ResponseEntity<List<AddressDTO>> getAddressesByUserId(@PathVariable Long userId) {
+		return new ResponseEntity<>(
+			addressService.getAddressesByUserId(userId),
+			HttpStatus.OK
+		);
+	}
+
+	@GetMapping("/admin/addresses/{addressId}")
+	@PreAuthorize(Authority.ADMIN)
 	public ResponseEntity<AddressDTO> getAddressById(@PathVariable Long addressId) {
 		return new ResponseEntity<>(
 			addressService.getAddressById(addressId),
+			HttpStatus.OK
+		);
+	}
+
+	@PutMapping("/addresses/{addressId}")
+	public ResponseEntity<AddressDTO> updateAddress(@Valid @RequestBody AddressDTO addressDTO, @PathVariable Long addressId) {
+		return new ResponseEntity<>(
+			addressService.updateAddress(addressDTO, addressId),
+			HttpStatus.OK
+		);
+	}
+
+	@DeleteMapping("/addresses/{addressId}")
+	public ResponseEntity<AddressDTO> deleteAddress(@PathVariable Long addressId) {
+		return new ResponseEntity<>(
+			addressService.deleteAddress(addressId),
 			HttpStatus.OK
 		);
 	}

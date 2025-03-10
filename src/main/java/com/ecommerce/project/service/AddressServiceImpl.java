@@ -63,7 +63,12 @@ public class AddressServiceImpl implements AddressService {
 		}
 
 		List<AddressDTO> addressesDTOs = addresses.stream()
-			.map(address -> modelMapper.map(address, AddressDTO.class)).toList();
+			.map(address -> {
+				AddressDTO addressDTO = modelMapper.map(address, AddressDTO.class);
+				addressDTO.setUserId(address.getUser().getId());
+
+				return addressDTO;
+			}).toList();
 
 		return PageableResponse.<AddressDTO>builder()
 			.content(addressesDTOs)
@@ -91,5 +96,36 @@ public class AddressServiceImpl implements AddressService {
 		return addressRepository.findById(addressId)
 			.map(address -> modelMapper.map(address, AddressDTO.class))
 			.orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
+	}
+
+	public List<AddressDTO> getAddressesByUserId(Long userId) {
+		return addressRepository.findAllByUserId(userId).stream()
+			.map(address -> modelMapper.map(address, AddressDTO.class))
+			.toList();
+	}
+
+	@Override
+	public AddressDTO updateAddress(AddressDTO addressDTO, Long addressId) {
+		Address addressToUpdate = addressRepository.findById(addressId)
+			.orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
+
+		addressToUpdate.setCity(addressDTO.getCity());
+		addressToUpdate.setStreet(addressDTO.getStreet());
+		addressToUpdate.setState(addressDTO.getState());
+		addressToUpdate.setCountry(addressDTO.getCountry());
+		addressToUpdate.setBuildingName(addressDTO.getBuildingName());
+		addressToUpdate.setZipCode(addressDTO.getZipCode());
+
+		return modelMapper.map(addressRepository.save(addressToUpdate), AddressDTO.class);
+	}
+
+	@Override
+	public AddressDTO deleteAddress(Long addressId) {
+		Address addressToDelete = addressRepository.findById(addressId)
+			.orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
+
+		addressRepository.delete(addressToDelete);
+
+		return modelMapper.map(addressToDelete, AddressDTO.class);
 	}
 }
