@@ -105,6 +105,22 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
+	public AddressDTO updateLoggedInUserAddress(AddressDTO addressDTO, Long addressId) {
+		User user = authUtil.getLoggedInUser();
+		Address addressToUpdate = addressRepository.findByIdAndUserId(addressId, user.getId())
+			.orElseThrow(() -> new ResourceNotFoundException("Logged in user address", "addressId", addressId));
+
+		addressToUpdate.setCity(addressDTO.getCity());
+		addressToUpdate.setStreet(addressDTO.getStreet());
+		addressToUpdate.setState(addressDTO.getState());
+		addressToUpdate.setCountry(addressDTO.getCountry());
+		addressToUpdate.setBuildingName(addressDTO.getBuildingName());
+		addressToUpdate.setZipCode(addressDTO.getZipCode());
+
+		return modelMapper.map(addressRepository.save(addressToUpdate), AddressDTO.class);
+	}
+
+	@Override
 	public AddressDTO updateAddress(AddressDTO addressDTO, Long addressId) {
 		Address addressToUpdate = addressRepository.findById(addressId)
 			.orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
@@ -120,7 +136,18 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public AddressDTO deleteAddress(Long addressId) {
+	public AddressDTO deleteLoggedInUserAddress(Long addressId) {
+		User user = authUtil.getLoggedInUser();
+		Address addressToDelete = addressRepository.findByIdAndUserId(addressId, user.getId())
+			.orElseThrow(() -> new ResourceNotFoundException("Logged in user address", "addressId", addressId));
+
+		addressRepository.delete(addressToDelete);
+
+		return modelMapper.map(addressToDelete, AddressDTO.class);
+	}
+
+	@Override
+	public AddressDTO deleteAddressById(Long addressId) {
 		Address addressToDelete = addressRepository.findById(addressId)
 			.orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
 
@@ -128,4 +155,6 @@ public class AddressServiceImpl implements AddressService {
 
 		return modelMapper.map(addressToDelete, AddressDTO.class);
 	}
+
+
 }
