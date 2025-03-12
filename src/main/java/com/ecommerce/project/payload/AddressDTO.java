@@ -16,8 +16,6 @@ public class AddressDTO {
 	@Size(min = 5, message = "Street name should be at least 5 characters")
 	private String street;
 
-	@NotBlank
-	@Size(min = 5, message = "Building name should be at least 5 characters")
 	private String buildingName;
 
 	@NotBlank
@@ -25,7 +23,7 @@ public class AddressDTO {
 	private String city;
 
 	@NotBlank
-	@Size(min = 2, message = "City name should be at least 5 characters")
+	@Size(min = 2, message = "State name should be at least 5 characters")
 	private String state;
 
 	@NotBlank
