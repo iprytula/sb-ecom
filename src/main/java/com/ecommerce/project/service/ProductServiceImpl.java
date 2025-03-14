@@ -111,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
 				if (productDTO.getImage() == null) {
 					mapper.skip(Product::setImage);
 				}
-				mapper.skip(Product::setId);
+				mapper.skip(Product::setProductId);
 			});
 		modelMapper.map(productDTO, existingProduct);
 
@@ -121,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
 		if (!cartsToModify.isEmpty()) {
 			cartsToModify.forEach(cart -> cart.getCartItems()
 				.stream()
-				.filter(ci -> ci.getProduct().getId().equals(productId))
+				.filter(ci -> ci.getProduct().getProductId().equals(productId))
 				.findFirst()
 				.ifPresent(cart::updateCartItem)
 			);
@@ -144,7 +144,7 @@ public class ProductServiceImpl implements ProductService {
 		if (!cartsToModify.isEmpty()) {
 			cartsToModify.forEach(cart -> {
 				cart.getCartItems().stream()
-					.filter(ci -> ci.getProduct().getId().equals(productId))
+					.filter(ci -> ci.getProduct().getProductId().equals(productId))
 					.findFirst()
 					.ifPresent(cart::deleteCartItem);
 			});

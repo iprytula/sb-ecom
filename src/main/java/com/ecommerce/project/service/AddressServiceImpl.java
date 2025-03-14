@@ -65,7 +65,7 @@ public class AddressServiceImpl implements AddressService {
 		List<AddressDTO> addressesDTOs = addresses.stream()
 			.map(address -> {
 				AddressDTO addressDTO = modelMapper.map(address, AddressDTO.class);
-				addressDTO.setUserId(address.getUser().getId());
+				addressDTO.setUserId(address.getUser().getUserId());
 
 				return addressDTO;
 			}).toList();
@@ -86,7 +86,7 @@ public class AddressServiceImpl implements AddressService {
 	public List<AddressDTO> getLoggedInUserAddresses() {
 		User user = authUtil.getLoggedInUser();
 
-		return addressRepository.findAllByUserId(user.getId()).stream()
+		return addressRepository.findAllByUserId(user.getUserId()).stream()
 			.map(address -> modelMapper.map(address, AddressDTO.class))
 			.toList();
 	}
@@ -107,7 +107,7 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public AddressDTO updateLoggedInUserAddress(AddressDTO addressDTO, Long addressId) {
 		User user = authUtil.getLoggedInUser();
-		Address addressToUpdate = addressRepository.findByIdAndUserId(addressId, user.getId())
+		Address addressToUpdate = addressRepository.findByIdAndUserId(addressId, user.getUserId())
 			.orElseThrow(() -> new ResourceNotFoundException("Logged in user address", "addressId", addressId));
 
 		addressToUpdate.setCity(addressDTO.getCity());
@@ -138,7 +138,7 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public AddressDTO deleteLoggedInUserAddress(Long addressId) {
 		User user = authUtil.getLoggedInUser();
-		Address addressToDelete = addressRepository.findByIdAndUserId(addressId, user.getId())
+		Address addressToDelete = addressRepository.findByIdAndUserId(addressId, user.getUserId())
 			.orElseThrow(() -> new ResourceNotFoundException("Logged in user address", "addressId", addressId));
 
 		addressRepository.delete(addressToDelete);

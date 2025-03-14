@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartDTO {
-	private Long id;
+	private Long cartId;
 	private Double totalPrice;
 	private List<ProductDTO> products = new ArrayList<>();
 	private Boolean isActive;

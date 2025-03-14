@@ -19,7 +19,7 @@ import java.util.Optional;
 public class Cart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long cartId;
 
 	@OneToOne
 	@JoinColumn(name = "user_id")
@@ -36,7 +36,7 @@ public class Cart {
 
 	public void addCartItem(CartItem cartItem) {
 		Optional<CartItem> existingCartItem = cartItems.stream()
-			.filter(ci -> ci.getProduct().getId().equals(cartItem.getProduct().getId()))
+			.filter(ci -> ci.getProduct().getProductId().equals(cartItem.getProduct().getProductId()))
 			.findFirst();
 
 		if (existingCartItem.isPresent()) {
@@ -50,9 +50,9 @@ public class Cart {
 
 	public void updateCartItem(CartItem cartItem) {
 		CartItem cartItemToUpdate = cartItems.stream()
-			.filter(ci -> ci.getId().equals(cartItem.getId()))
+			.filter(ci -> ci.getCartItemId().equals(cartItem.getCartItemId()))
 			.findFirst()
-			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getId()));
+			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getCartItemId()));
 
 		cartItemToUpdate.setQuantity(cartItem.getQuantity());
 
@@ -61,9 +61,9 @@ public class Cart {
 
 	public void deleteCartItem(CartItem cartItem) {
 		CartItem cartItemToDelete = cartItems.stream()
-			.filter(ci -> ci.getProduct().getId().equals(cartItem.getProduct().getId()))
+			.filter(ci -> ci.getProduct().getProductId().equals(cartItem.getProduct().getProductId()))
 			.findFirst()
-			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getId()));
+			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getCartItemId()));
 
 		cartItems.remove(cartItemToDelete);
 
