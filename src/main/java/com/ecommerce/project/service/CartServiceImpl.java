@@ -49,7 +49,7 @@ public class CartServiceImpl implements CartService {
 		}
 
 		User loggedInUser = authUtil.getLoggedInUser();
-		Cart cart = cartRepository.findActiveCartByUserId(loggedInUser.getUserId())
+		Cart cart = cartRepository.findActiveCartByUserId(loggedInUser.getId())
 			.orElseGet(() -> {
 				Cart newCart = new Cart();
 				newCart.setUser(loggedInUser);
@@ -59,7 +59,7 @@ public class CartServiceImpl implements CartService {
 		Product product = productRepository.findById(productId)
 			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
-		if (cartItemRepository.findCartItemByCartIdAndProductId(cart.getCartId(), productId).isPresent()) {
+		if (cartItemRepository.findCartItemByCartIdAndProductId(cart.getId(), productId).isPresent()) {
 			throw new APIException("Product " + product.getName() + " already exists in the cart");
 		}
 
@@ -124,7 +124,7 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public CartDTO getLoggedInUserCart() {
-		Long loggedInUserId = authUtil.getLoggedInUser().getUserId();
+		Long loggedInUserId = authUtil.getLoggedInUser().getId();
 		Cart cart = cartRepository.findActiveCartByUserId(loggedInUserId)
 			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", loggedInUserId));
 
@@ -137,11 +137,11 @@ public class CartServiceImpl implements CartService {
 	@Override
 	@Transactional
 	public CartDTO updateCartItemQuantity(Long productId, Integer quantity) {
-		Cart cart = cartRepository.findActiveCartByUserId(authUtil.getLoggedInUser().getUserId())
-			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", authUtil.getLoggedInUser().getUserId()));
+		Cart cart = cartRepository.findActiveCartByUserId(authUtil.getLoggedInUser().getId())
+			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", authUtil.getLoggedInUser().getId()));
 		Product product = productRepository.findById(productId)
 			.orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
-		CartItem cartItemToUpdate = cartItemRepository.findCartItemByCartIdAndProductId(cart.getCartId(), productId)
+		CartItem cartItemToUpdate = cartItemRepository.findCartItemByCartIdAndProductId(cart.getId(), productId)
 			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId", productId));
 
 		if (product.getQuantity() < quantity) {
@@ -165,9 +165,9 @@ public class CartServiceImpl implements CartService {
 	@Override
 	@Transactional
 	public CartDTO deleteProductFromCart(Long productId) {
-		Cart cart = cartRepository.findActiveCartByUserId(authUtil.getLoggedInUser().getUserId())
-			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", authUtil.getLoggedInUser().getUserId()));
-		CartItem cartItemToDelete = cartItemRepository.findCartItemByCartIdAndProductId(cart.getCartId(), productId)
+		Cart cart = cartRepository.findActiveCartByUserId(authUtil.getLoggedInUser().getId())
+			.orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", authUtil.getLoggedInUser().getId()));
+		CartItem cartItemToDelete = cartItemRepository.findCartItemByCartIdAndProductId(cart.getId(), productId)
 			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId", productId));
 
 		cart.deleteCartItem(cartItemToDelete);

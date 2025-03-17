@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDTO {
-	private Long addressId;
+	private Long id;
 
 	@NotBlank
 	@Size(min = 5, message = "Street name should be at least 5 characters")

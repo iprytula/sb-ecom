@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDTO {
-	private Long categoryId;
+	private Long id;
 
 	@NotBlank(message = "Category name is mandatory")
 	@Size(min = 2, max = 25, message = "Category name must be between 2 and 25 characters")

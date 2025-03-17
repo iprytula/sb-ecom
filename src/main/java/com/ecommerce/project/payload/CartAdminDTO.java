@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartAdminDTO {
-	private Long cartId;
+	private Long id;
 	private UserDTO user;
 	private Double totalPrice;
 	private List<ProductDTO> products = new ArrayList<>();

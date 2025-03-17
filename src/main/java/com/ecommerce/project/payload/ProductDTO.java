@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDTO {
-	private Long productId;
+	private Long id;
 
 	@NotBlank(message = "Product name couldn't be blank", groups = { AddProductValidationGroup.class, Default.class })
 	@Size(min = 2, max = 50, message = "Product name must be between 2 and 50 characters")

@@ -28,7 +28,7 @@ import java.util.Set;
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userId;
+	private Long id;
 
 	@NotBlank
 	@Size(max = 50)
