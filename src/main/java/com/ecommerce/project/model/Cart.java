@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +28,6 @@ public class Cart {
 	private List<CartItem> cartItems = new ArrayList<>();
 
 	private Double totalPrice = 0.0;
-
-	private Boolean isActive = true;
-
-	private Date orderDate = null;
 
 	public void addCartItem(CartItem cartItem) {
 		Optional<CartItem> existingCartItem = cartItems.stream()
@@ -74,6 +69,16 @@ public class Cart {
 		totalPrice = cartItems.stream()
 			.mapToDouble(ci -> ci.getProduct().getPrice() * ci.getQuantity())
 			.sum();
+	}
+
+	@Override
+	public String toString() {
+		return "Cart{" +
+			"id=" + id +
+			", user=" + user +
+			", cartItems=" + cartItems +
+			", totalPrice=" + totalPrice +
+			'}';
 	}
 
 }

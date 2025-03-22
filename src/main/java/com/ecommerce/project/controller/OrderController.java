@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 import com.ecommerce.project.payload.OrderDTO;
+import com.ecommerce.project.payload.OrderRequestDTO;
 import com.ecommerce.project.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,13 +19,12 @@ public class OrderController {
 		this.orderService = orderService;
 	}
 
-	@PostMapping("/order/{paymentMethod}")
+	@PostMapping("/order")
 	public ResponseEntity<OrderDTO> placeOrder(
-		@RequestBody OrderDTO orderRequest,
-		@PathVariable String paymentMethod
+		@RequestBody OrderRequestDTO orderRequest
 	) {
 		return new ResponseEntity<>(
-			orderService.placeOrder(orderRequest, paymentMethod),
+			orderService.placeOrder(orderRequest),
 			HttpStatus.CREATED
 		);
 	}

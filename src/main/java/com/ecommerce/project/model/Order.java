@@ -1,5 +1,6 @@
 package com.ecommerce.project.model;
 
+import com.ecommerce.project.config.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -34,7 +35,9 @@ public class Order {
 	private Payment payment;
 
 	private Double totalAmount;
-	private String orderStatus;
+
+	@Enumerated(EnumType.STRING)
+	private OrderStatus orderStatus;
 
 	@ManyToOne
 	@JoinColumn(name = "address_id")

@@ -53,4 +53,12 @@ public class Product {
 			return this.standardPrice;
 		}
 	}
+
+	public Double getDiscount() {
+		if (this.specialPrice != null) {
+			return this.standardPrice - this.specialPrice;
+		} else {
+			return 0.0;
+		}
+	}
 }

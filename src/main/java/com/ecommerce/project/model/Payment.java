@@ -1,8 +1,6 @@
 package com.ecommerce.project.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +18,6 @@ public class Payment {
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	@NotBlank(message = "Payment method is required")
-	@Size(min = 4, max = 50, message = "Payment method must be between 4 and 50 characters")
 	private String paymentMethod;
 
 	private String pgPaymentId;
@@ -29,8 +25,8 @@ public class Payment {
 	private String pgResponseMessage;
 	private String pgName;
 
-	public Payment(Long id, String pgPaymentId, String pgStatus, String pgResponseMessage, String pgName) {
-		this.id = id;
+	public Payment(String paymentMethod, String pgPaymentId, String pgStatus, String pgResponseMessage, String pgName) {
+		this.paymentMethod = paymentMethod;
 		this.pgPaymentId = pgPaymentId;
 		this.pgStatus = pgStatus;
 		this.pgResponseMessage = pgResponseMessage;

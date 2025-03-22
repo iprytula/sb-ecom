@@ -1,7 +1,8 @@
 package com.ecommerce.project.service;
 
 import com.ecommerce.project.payload.OrderDTO;
+import com.ecommerce.project.payload.OrderRequestDTO;
 
 public interface OrderService {
-	OrderDTO placeOrder(OrderDTO orderRequest, String paymentMethod);
+	OrderDTO placeOrder(OrderRequestDTO orderRequest);
 }

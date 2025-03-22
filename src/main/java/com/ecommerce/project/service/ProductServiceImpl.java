@@ -117,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
 
 		ProductDTO updatedProductDTO = modelMapper.map(productRepository.save(existingProduct), ProductDTO.class);
 
-		List<Cart> cartsToModify = cartRepository.findActiveCartsByProductId(productId).orElseGet(ArrayList::new);
+		List<Cart> cartsToModify = cartRepository.findCartsByProductId(productId).orElseGet(ArrayList::new);
 		if (!cartsToModify.isEmpty()) {
 			cartsToModify.forEach(cart -> cart.getCartItems()
 				.stream()
@@ -140,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
 
 		productRepository.delete(productToDelete);
 
-		List<Cart> cartsToModify = cartRepository.findActiveCartsByProductId(productId).orElseGet(ArrayList::new);
+		List<Cart> cartsToModify = cartRepository.findCartsByProductId(productId).orElseGet(ArrayList::new);
 		if (!cartsToModify.isEmpty()) {
 			cartsToModify.forEach(cart -> {
 				cart.getCartItems().stream()

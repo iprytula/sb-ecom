@@ -28,4 +28,22 @@ public class OrderItem {
 	private double discount;
 	private double orderedProductPrice;
 
+	public OrderItem(
+		Product product,
+		Order order,
+		Integer quantity,
+		Double discount,
+		Double price
+	) {
+		this.product = product;
+		this.order = order;
+		this.quantity = quantity;
+		this.discount = discount;
+		this.orderedProductPrice = price;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderItem{id=" + id + ", product=" + product.getName() + ", quantity=" + quantity + "}";
+	}
 }
