@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class OrderServiceImpl implements OrderService {
 	private final ProductRepository productRepository;
 	private final ModelMapper modelMapper;
 	private final PaymentRepository paymentRepository;
-	private final CartService cartService;
+	private final CartItemRepository cartItemRepository;
 
 	public OrderServiceImpl(
 		AuthUtil authUtil,
@@ -37,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
 		ProductRepository productRepository,
 		ModelMapper modelMapper,
 		PaymentRepository paymentRepository,
-		CartService cartService
+		CartItemRepository cartItemRepository
 	) {
 		this.authUtil = authUtil;
 		this.cartRepository = cartRepository;
@@ -47,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
 		this.productRepository = productRepository;
 		this.modelMapper = modelMapper;
 		this.paymentRepository = paymentRepository;
-		this.cartService = cartService;
+		this.cartItemRepository = cartItemRepository;
 	}
 
 	@Override
@@ -65,7 +64,6 @@ public class OrderServiceImpl implements OrderService {
 
 		Order order = new Order();
 		order.setEmail(orderRequest.getEmail());
-		order.setOrderDate(LocalDate.now());
 		order.setTotalAmount(cart.getTotalPrice());
 		order.setOrderStatus(OrderStatus.PLACED);
 		order.setAddress(address);
@@ -101,22 +99,27 @@ public class OrderServiceImpl implements OrderService {
 
 		orderItems = orderItemRepository.saveAll(orderItems);
 
-		cart.getCartItems().forEach(item -> {
-			int quantity = item.getQuantity();
-			Product product = item.getProduct();
+		List<Product> productsToUpdate = cart.getCartItems().stream()
+			.map(cartItem -> {
+				Product product = cartItem.getProduct();
+				product.setQuantity(product.getQuantity() - cartItem.getQuantity());
 
-			// Reduce stock quantity
-			product.setQuantity(product.getQuantity() - quantity);
+				cartItemRepository.deleteCartItemByCartIdAndProductId(cart.getId(), product.getId());
 
-			// Save product back to the database
-			productRepository.save(product);
+				return product;
+			})
+			.toList();
 
-			// Remove items from cart
-			cartService.deleteProductFromCart(item.getProduct().getId());
-		});
+		productRepository.saveAll(productsToUpdate);
+		cart.clearCart();
+		cartRepository.save(cart);
 
 		OrderDTO orderDTO = modelMapper.map(savedOrder, OrderDTO.class);
-		orderItems.forEach(item -> orderDTO.getOrderItems().add(modelMapper.map(item, OrderItemDTO.class)));
+		List<OrderItemDTO> orderItemsDTOs = orderItems.stream()
+			.map(item -> modelMapper.map(item, OrderItemDTO.class))
+			.toList();
+
+		orderDTO.setOrderItems(orderItemsDTOs);
 
 		orderDTO.setAddress(modelMapper.map(address, AddressDTO.class));
 

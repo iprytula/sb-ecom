@@ -10,6 +10,7 @@ import java.util.List;
 @Table(name = "categories")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

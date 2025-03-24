@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +18,7 @@ import java.util.Optional;
 @Table(name = "carts")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Cart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +28,7 @@ public class Cart {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@OneToMany(mappedBy = "cart", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, orphanRemoval = true)
+	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartItem> cartItems = new ArrayList<>();
 
 	private Double totalPrice = 0.0;
@@ -55,13 +59,7 @@ public class Cart {
 	}
 
 	public void deleteCartItem(CartItem cartItem) {
-		CartItem cartItemToDelete = cartItems.stream()
-			.filter(ci -> ci.getProduct().getId().equals(cartItem.getProduct().getId()))
-			.findFirst()
-			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItem.getId()));
-
-		cartItems.remove(cartItemToDelete);
-
+		cartItems.remove(cartItem);
 		recalculateTotalPrice();
 	}
 
@@ -69,16 +67,15 @@ public class Cart {
 		totalPrice = cartItems.stream()
 			.mapToDouble(ci -> ci.getProduct().getPrice() * ci.getQuantity())
 			.sum();
+
+		// Round totalPrice to 2 decimal places
+		BigDecimal bd = new BigDecimal(totalPrice).setScale(2, RoundingMode.HALF_UP);
+		totalPrice = bd.doubleValue();
 	}
 
-	@Override
-	public String toString() {
-		return "Cart{" +
-			"id=" + id +
-			", user=" + user +
-			", cartItems=" + cartItems +
-			", totalPrice=" + totalPrice +
-			'}';
+	public void clearCart() {
+		cartItems.clear();
+		totalPrice = 0.0;
 	}
 
 }

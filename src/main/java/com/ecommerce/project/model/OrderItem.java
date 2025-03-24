@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @Table(name = "order_items")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class OrderItem {
 
 	@Id
@@ -40,10 +42,5 @@ public class OrderItem {
 		this.quantity = quantity;
 		this.discount = discount;
 		this.orderedProductPrice = price;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderItem{id=" + id + ", product=" + product.getName() + ", quantity=" + quantity + "}";
 	}
 }

@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "addresses")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Address {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

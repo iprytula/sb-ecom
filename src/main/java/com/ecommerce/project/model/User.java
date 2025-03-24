@@ -25,6 +25,7 @@ import java.util.Set;
 		@UniqueConstraint(columnNames = "email")
 	}
 )
+@ToString
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

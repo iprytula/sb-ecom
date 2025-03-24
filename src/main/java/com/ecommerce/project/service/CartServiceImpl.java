@@ -157,7 +157,8 @@ public class CartServiceImpl implements CartService {
 
 		cart.updateCartItem(cartItemToUpdate);
 
-		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(cartRepository.save(cart), false);
+		Cart savedCart = cartRepository.save(cart);
+		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(savedCart, false);
 		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 
 		return cartDTO;
@@ -171,10 +172,11 @@ public class CartServiceImpl implements CartService {
 		CartItem cartItemToDelete = cartItemRepository.findCartItemByCartIdAndProductId(cart.getId(), productId)
 			.orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId", productId));
 
+		cartItemRepository.deleteCartItemByCartIdAndProductId(cart.getId(), cartItemToDelete.getProduct().getId());
 		cart.deleteCartItem(cartItemToDelete);
-		cartRepository.save(cart);
 
-		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(cart, false);
+		Cart savedCart = cartRepository.save(cart);
+		CartDTO cartDTO = (CartDTO) mapCartToCartDTO(savedCart, false);
 		cartDTO.setProducts(mapCartItemsToProductsDTOs(cart.getCartItems()));
 
 		return cartDTO;

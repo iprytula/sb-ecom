@@ -6,8 +6,9 @@ import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Order {
 
 	@Id
@@ -26,12 +28,12 @@ public class Order {
 	@Column(nullable = false)
 	private String email;
 
-	@OneToMany(mappedBy = "order", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<OrderItem> orderItems = new ArrayList<>();
 
-	private LocalDate orderDate;
+	private LocalDateTime orderDateTime = LocalDateTime.now();
 
-	@OneToOne(mappedBy = "order", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@OneToOne(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private Payment payment;
 
 	private Double totalAmount;
