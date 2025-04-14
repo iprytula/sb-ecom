@@ -14,7 +14,6 @@ This project is the culmination of learning from [Java Spring Boot: Professional
 - User profile, role, and permission management.
 - Shopping cart, order, and payment processing.
 - Pagination and sorting for efficient data management.
-- Deployment-ready for AWS with advanced deployment options.
 - Use of Lombok to reduce boilerplate code.
 
 ## Technologies Used
